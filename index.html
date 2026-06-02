@@ -2701,7 +2701,7 @@ DEBES responder guiándolos en el procedimiento paso a paso de cómo se calcula 
 Mantén tus respuestas relativamente concisas, estructuradas en markdown, muy claras y motivadoras.`;
 
   try {
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    const response = await fetch("https://corsproxy.io/?https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${gKey}`,
