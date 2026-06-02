@@ -798,6 +798,242 @@
     transform: translateY(-1px);
   }
 
+  /* ── SIMULATOR STYLES ── */
+  .sim-container {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 1.5rem;
+    margin: 2.5rem 0;
+  }
+  
+  .sim-panel {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  .sim-controls-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .sim-slider-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .sim-slider-group label {
+    font-size: 0.7rem;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .sim-slider-group label span {
+    color: var(--cyan);
+    font-weight: 700;
+  }
+
+  .sim-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.08);
+    outline: none;
+    transition: background 0.3s;
+  }
+
+  .sim-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--cyan);
+    cursor: pointer;
+    box-shadow: 0 0 8px var(--cyan);
+    transition: transform 0.1s;
+  }
+  
+  .sim-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+  }
+
+  .sim-btn-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .btn-sim {
+    flex: 1;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+
+  .btn-sim:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .btn-sim.active-run {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: var(--green);
+    color: var(--green);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+  }
+
+  .sim-scenarios {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+  }
+
+  .scenario-btn {
+    text-align: left;
+    font-size: 0.72rem;
+    font-family: var(--font-sans);
+    padding: 0.55rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.01);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.25s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .scenario-btn:hover {
+    border-color: var(--accent2-glow);
+    background: rgba(99, 102, 241, 0.06);
+    color: var(--text);
+    transform: translateX(3px);
+  }
+
+  .scenario-btn span.tag {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+
+  .sim-view-panel {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.95) 0%, rgba(10, 15, 26, 0.98) 100%);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 1.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sim-canvas-container {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    background: rgba(8, 12, 20, 0.8);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .sim-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .sim-widgets {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .motor-widget {
+    background: rgba(8, 12, 20, 0.6);
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: 10px;
+    padding: 1rem;
+    height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .motor-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .motor-stat-item {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    padding-bottom: 0.2rem;
+  }
+
+  .motor-stat-item span:first-child {
+    color: var(--text-muted);
+  }
+
+  .motor-stat-item span:last-child {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .motor-stat-item span.cyan-val { color: var(--cyan); }
+  .motor-stat-item span.orange-val { color: var(--orange); }
+  .motor-stat-item span.violet-val { color: #c084fc; }
+
+  /* ── WIDGET MOTOR ROTACIÓN DIBUJO ── */
+  .motor-svg-wrap {
+    width: 80px;
+    height: 80px;
+    position: relative;
+  }
+
+  .motor-svg-gear {
+    transform-origin: 40px 40px;
+    transition: transform 0.05s linear;
+  }
+
 </style>
 </head>
 <body>
@@ -821,6 +1057,7 @@
     <a href="#identificacion" class="nav-link">Identificación</a>
     <a href="#datos" class="nav-link">Firmware</a>
     <a href="#controladores" class="nav-link">Controladores</a>
+    <a href="#simulador" class="nav-link">Simulador</a>
     <a href="#posicion" class="nav-link">Posición</a>
   </nav>
 </header>
@@ -839,7 +1076,8 @@
       <a href="#identificacion" class="step-pill">03 · Identificación</a>
       <a href="#datos"         class="step-pill">04 · Firmware Arduino</a>
       <a href="#controladores" class="step-pill">05 · Controladores</a>
-      <a href="#posicion"      class="step-pill">06 · Control Posición</a>
+      <a href="#simulador"     class="step-pill">06 · Simulador Lazo Cerrado</a>
+      <a href="#posicion"      class="step-pill">07 · Control Posición</a>
     </div>
   </div>
 </section>
@@ -1627,10 +1865,166 @@ if __name__ == "__main__":
   </div>
 </section>
 
-<!-- ══════════ 06 CONTROL DE POSICIÓN ══════════ -->
-<section class="section" id="posicion">
+<!-- ══════════ 06 SIMULADOR DE LAZO CERRADO ══════════ -->
+<section class="section" id="simulador">
   <div class="section-header">
     <span class="section-num">06</span>
+    <h2 class="section-title">Simulador de Lazo Cerrado N20</h2>
+  </div>
+
+  <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.75; margin-bottom:1.5rem;">
+    ¡Pon a prueba tu controlador diseñado antes de cargarlo al hardware real! Este simulador físico interactivo integra numéricamente mediante aproximaciones finas la dinámica de primer orden del motor $G_v(s) = \frac{K}{\tau s + 1}$ bajo control discreto a una tasa de muestreo determinista de $T_s = 10\text{ ms}$. Experimenta con saturación de voltaje, perturbaciones abruptas y presets dinámicos.
+  </p>
+
+  <div class="sim-container">
+    <!-- Panel de control de simulación -->
+    <div class="sim-panel">
+      <div class="calc-header">
+        <div class="calc-header-title">Configuración del Control</div>
+        <div class="calc-header-subtitle">Parámetros del Bucle de Simulación</div>
+      </div>
+
+      <div class="sim-controls-grid">
+        <div class="calc-input-group">
+          <label>Ganancia Kp</label>
+          <input type="number" id="sim-kp" class="calc-input" value="0.7483" step="0.0001" oninput="syncSimParams()">
+        </div>
+        <div class="calc-input-group">
+          <label>Ganancia Ki</label>
+          <input type="number" id="sim-ki" class="calc-input" value="14.6853" step="0.0001" oninput="syncSimParams()">
+        </div>
+      </div>
+
+      <div class="sim-controls-grid" style="margin-top: -0.25rem;">
+        <div class="calc-input-group">
+          <label>Tipo de Lazo</label>
+          <select id="sim-loop-type" class="calc-select" onchange="changeSimLoop()">
+            <option value="velocity">Control de Velocidad (PI)</option>
+            <option value="position">Control de Posición (PI + Integrador)</option>
+          </select>
+        </div>
+        <div class="calc-input-group">
+          <label>Prefiltro Activo</label>
+          <select id="sim-use-filter" class="calc-select" onchange="syncSimParams()">
+            <option value="no">Sin Filtro de Referencia</option>
+            <option value="yes">Filtro de Referencia Habilitado</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="sim-slider-group">
+        <label>Setpoint (Referencia) <span id="sim-sp-val">50.0 rad/s</span></label>
+        <input type="range" id="sim-slider-sp" class="sim-slider" min="-100" max="100" value="50" step="1" oninput="updateSimSliders()">
+      </div>
+
+      <div class="sim-slider-group">
+        <label>Carga Externa (Fricción / Torque) <span id="sim-dist-val" style="color:var(--orange);">0%</span></label>
+        <input type="range" id="sim-slider-dist" class="sim-slider" min="0" max="100" value="0" step="5" oninput="updateSimSliders()">
+      </div>
+
+      <div class="sim-btn-group">
+        <button id="sim-btn-play" class="btn-sim btn-primary btn-sim-play" onclick="toggleSim()">
+          <span id="sim-play-icon">▶</span> <span id="sim-play-text">Iniciar</span>
+        </button>
+        <button class="btn-sim" onclick="resetSim()">
+          <span>🔄</span> Reiniciar
+        </button>
+      </div>
+
+      <div class="calc-header" style="margin-top: 0.5rem; padding-bottom: 0.4rem;">
+        <div class="calc-header-title" style="font-size: 0.9rem;">Escenarios de Prueba Estudiantiles</div>
+      </div>
+
+      <div class="sim-scenarios">
+        <button class="scenario-btn" onclick="loadScenario('perfect')">
+          Sintonización Óptima (Sin sobreimpulso) <span class="tag tag-alg">Óptimo</span>
+        </button>
+        <button class="scenario-btn" onclick="loadScenario('ringing')">
+          Bajo Amortiguamiento (Oscilaciones) <span class="tag tag-lgr" style="background:rgba(239, 68, 68, 0.15); color:var(--accent);">Sub</span>
+        </button>
+        <button class="scenario-btn" onclick="loadScenario('instability')">
+          Inestabilidad por Ganancia Crítica <span class="tag tag-pi" style="background:rgba(249, 115, 22, 0.15); color:var(--orange);">Inestable</span>
+        </button>
+        <button class="scenario-btn" onclick="loadScenario('disturbance')">
+          Perturbación Brusca y Rechazo <span class="tag tag-filter">Perturbación</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Visualizador de simulación en tiempo real -->
+    <div class="sim-view-panel">
+      <div class="calc-header">
+        <div class="calc-header-title" style="color:var(--cyan);">Osciloscopio Digital</div>
+        <div class="calc-header-subtitle">Respuesta Temporal del Lazo Cerrado en Vivo</div>
+      </div>
+
+      <div class="sim-canvas-container">
+        <canvas id="sim-canvas" class="sim-canvas"></canvas>
+      </div>
+
+      <div class="sim-widgets">
+        <!-- Widget Físico Motor N20 -->
+        <div class="motor-widget">
+          <div class="motor-svg-wrap">
+            <svg viewBox="0 0 80 80" width="100%" height="100%">
+              <!-- Cuerpo del motor N20 -->
+              <rect x="25" y="10" width="30" height="36" rx="5" fill="#2d3748" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+              <rect x="28" y="6" width="24" height="4" fill="#a0aec0"/>
+              <!-- Caja reductora dorada de piñones -->
+              <rect x="20" y="46" width="40" height="14" rx="3" fill="#d69e2e" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+              <circle cx="30" cy="53" r="2" fill="#1a202c"/>
+              <circle cx="50" cy="53" r="2" fill="#1a202c"/>
+              
+              <!-- Eje central -->
+              <rect x="37" y="60" width="6" height="12" fill="#cbd5e0"/>
+              
+              <!-- Piñón de cuadratura giratorio -->
+              <g id="motor-gear" class="motor-svg-gear">
+                <circle cx="40" cy="40" r="16" fill="rgba(6, 182, 212, 0.15)" stroke="var(--cyan)" stroke-width="1.5"/>
+                <!-- Ticks de cuadratura visuales -->
+                <line x1="40" y1="24" x2="40" y2="56" stroke="var(--cyan)" stroke-width="2"/>
+                <line x1="24" y1="40" x2="56" y2="40" stroke="var(--cyan)" stroke-width="2"/>
+                <line x1="28.7" y1="28.7" x2="51.3" y2="51.3" stroke="var(--cyan)" stroke-width="2"/>
+                <line x1="28.7" y1="51.3" x2="51.3" y2="28.7" stroke="var(--cyan)" stroke-width="2"/>
+                <!-- Eje central del piñón -->
+                <circle cx="40" cy="40" r="5" fill="#fff" stroke="var(--cyan)" stroke-width="1.5"/>
+              </g>
+            </svg>
+          </div>
+          <!-- Etiqueta de perturbación visual si está cargado -->
+          <div id="sim-brake-label" style="display:none; position:absolute; top:8px; right:8px; font-family:var(--font-mono); font-size:0.55rem; background:rgba(239,68,68,0.15); color:var(--accent); border:1px solid var(--accent); padding:0.15rem 0.35rem; border-radius:4px; text-transform:uppercase; font-weight:700;">
+            Freno Activo
+          </div>
+        </div>
+
+        <!-- Telemetría Dinámica -->
+        <div class="motor-stats">
+          <div class="motor-stat-item">
+            <span>Referencia r[k]:</span>
+            <span id="stat-sp" class="orange-val">0.00</span>
+          </div>
+          <div class="motor-stat-item">
+            <span>Salida y[k]:</span>
+            <span id="stat-y" class="cyan-val">0.00</span>
+          </div>
+          <div class="motor-stat-item">
+            <span>Esfuerzo u[k]:</span>
+            <span id="stat-u" class="violet-val">0.00 V</span>
+          </div>
+          <div class="motor-stat-item">
+            <span>Error e[k]:</span>
+            <span id="stat-err">0.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 07 CONTROL DE POSICIÓN ══════════ -->
+<section class="section" id="posicion">
+  <div class="section-header">
+    <span class="section-num">07</span>
     <h2 class="section-title">Control de Posición Angular</h2>
   </div>
 
@@ -1797,11 +2191,383 @@ function updateCalculator() {
   
   document.getElementById('math-tf-cz').textContent = `C(z) = (${b0.toFixed(4)} z + (${b1.toFixed(4)})) / (z - 1)`;
   document.getElementById('math-diff-eq').textContent = diffEqText;
+
+  // Sincronizar automáticamente ganancias con el simulador
+  if (!simRunning) {
+    const simKp = document.getElementById('sim-kp');
+    const simKi = document.getElementById('sim-ki');
+    if (simKp) simKp.value = Kp.toFixed(4);
+    if (simKi) simKi.value = Ki.toFixed(4);
+  }
 }
 
-// Inicializar la calculadora al cargar
+// ─────────────────────────────────────────────────────────────────────────────
+// LÓGICA DEL MOTOR DC N20 EN LAZO CERRADO DISCRETO (SIMULADOR ENGINE)
+// ─────────────────────────────────────────────────────────────────────────────
+let simRunning = false;
+let simInterval = null;
+let simTime = 0;
+
+// Estados de la planta continua (motor)
+let motorSpeed = 0.0;    // y(t) - velocidad angular en rad/s
+let motorPosition = 0.0; // theta(t) - posición en grados
+
+// Estados del controlador
+let integralAccumulator = 0.0;
+let controlEffort = 0.0;  // u[k]
+
+// Estados del prefiltro de referencia
+let filteredSP = 0.0;
+
+// Historial (Osciloscopio)
+const simHistoryMax = 250;
+let simHistorySP = [];
+let simHistoryY = [];
+let simHistoryU = [];
+
+function drawOscilloscope() {
+  const canvas = document.getElementById('sim-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width = canvas.parentElement.clientWidth;
+  const h = canvas.height = canvas.parentElement.clientHeight;
+  
+  // Fondo obscuro profundo
+  ctx.fillStyle = '#090d16';
+  ctx.fillRect(0, 0, w, h);
+  
+  // Rejilla de osciloscopio
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+  ctx.lineWidth = 1;
+  const gridDivs = 8;
+  for (let i = 1; i < gridDivs; i++) {
+    const x = (w / gridDivs) * i;
+    const y = (h / gridDivs) * i;
+    ctx.beginPath();
+    ctx.moveTo(x, 0); ctx.lineTo(x, h);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, y); ctx.lineTo(w, y);
+    ctx.stroke();
+  }
+  
+  if (simHistoryY.length === 0) return;
+  
+  // Encontrar el máximo absoluto para el escalado dinámico vertical
+  let maxVal = 10;
+  for (let i = 0; i < simHistoryY.length; i++) {
+    const absY = Math.abs(simHistoryY[i]);
+    const absSP = Math.abs(simHistorySP[i]);
+    if (absY > maxVal) maxVal = absY;
+    if (absSP > maxVal) maxVal = absSP;
+  }
+  maxVal = maxVal * 1.15; // 15% de holgura
+  
+  const scaleX = (val, idx) => (idx / (simHistoryMax - 1)) * w;
+  const scaleY = (val) => h / 2 - (val / maxVal) * (h / 2 - 20);
+  
+  // Eje de cero voltios/grados/velocidad
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.moveTo(0, h / 2);
+  ctx.lineTo(w, h / 2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  
+  // 1. Esfuerzo de control u[k] (Línea violeta atenuada de fondo)
+  ctx.strokeStyle = 'rgba(167, 139, 250, 0.35)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(scaleX(simHistoryU[0], 0), scaleY(simHistoryU[0] * (maxVal / 12.0))); // Escalar 12V a maxVal
+  for (let i = 1; i < simHistoryU.length; i++) {
+    ctx.lineTo(scaleX(simHistoryU[i], i), scaleY(simHistoryU[i] * (maxVal / 12.0)));
+  }
+  ctx.stroke();
+  
+  // 2. Setpoint / Referencia r[k] (Línea discontinua naranja)
+  ctx.strokeStyle = 'rgba(249, 115, 22, 0.85)';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  ctx.beginPath();
+  ctx.moveTo(scaleX(simHistorySP[0], 0), scaleY(simHistorySP[0]));
+  for (let i = 1; i < simHistorySP.length; i++) {
+    ctx.lineTo(scaleX(simHistorySP[i], i), scaleY(simHistorySP[i]));
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+  
+  // 3. Salida real medida y[k] (Cian brillante con glow)
+  ctx.strokeStyle = '#06b6d4';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = 'rgba(6, 182, 212, 0.4)';
+  ctx.shadowBlur = 6;
+  ctx.beginPath();
+  ctx.moveTo(scaleX(simHistoryY[0], 0), scaleY(simHistoryY[0]));
+  for (let i = 1; i < simHistoryY.length; i++) {
+    ctx.lineTo(scaleX(simHistoryY[i], i), scaleY(simHistoryY[i]));
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+}
+
+function updateSimSliders() {
+  const loopType = document.getElementById('sim-loop-type').value;
+  const spSlider = document.getElementById('sim-slider-sp');
+  const distSlider = document.getElementById('sim-slider-dist');
+  
+  let spVal = parseFloat(spSlider.value);
+  let distVal = parseFloat(distSlider.value);
+  
+  if (loopType === 'velocity') {
+    document.getElementById('sim-sp-val').textContent = spVal.toFixed(1) + " rad/s";
+    document.getElementById('stat-sp').textContent = spVal.toFixed(2);
+  } else {
+    document.getElementById('sim-sp-val').textContent = spVal.toFixed(0) + "°";
+    document.getElementById('stat-sp').textContent = spVal.toFixed(0) + ".00";
+  }
+  
+  document.getElementById('sim-dist-val').textContent = distVal.toFixed(0) + "%";
+  
+  // Freno visual
+  const brakeLabel = document.getElementById('sim-brake-label');
+  if (brakeLabel) {
+    brakeLabel.style.display = (distVal > 0) ? 'block' : 'none';
+  }
+}
+
+function changeSimLoop() {
+  const loopType = document.getElementById('sim-loop-type').value;
+  const spSlider = document.getElementById('sim-slider-sp');
+  
+  if (loopType === 'velocity') {
+    spSlider.min = "-100";
+    spSlider.max = "100";
+    spSlider.value = "50";
+  } else {
+    spSlider.min = "-360";
+    spSlider.max = "360";
+    spSlider.value = "180";
+  }
+  
+  resetSim();
+  updateSimSliders();
+}
+
+function syncSimParams() {
+  // Sincronización interna manual
+}
+
+function stepSimulation() {
+  const K = parseFloat(document.getElementById('input-k').value) || 1.8524;
+  const tau = parseFloat(document.getElementById('input-tau').value) || 0.1485;
+  
+  const Kp = parseFloat(document.getElementById('sim-kp').value) || 0.7483;
+  const Ki = parseFloat(document.getElementById('sim-ki').value) || 14.6853;
+  const loopType = document.getElementById('sim-loop-type').value;
+  const useFilter = document.getElementById('sim-use-filter').value;
+  
+  const rawSP = parseFloat(document.getElementById('sim-slider-sp').value);
+  const distPercent = parseFloat(document.getElementById('sim-slider-dist').value);
+  
+  const Ts = 0.010; // 10 ms
+  
+  // Filtro de referencia F(z) = (1 - a) / (z - a)
+  if (useFilter === 'yes') {
+    const a_filter = Math.exp(-Ts / tau);
+    filteredSP = a_filter * filteredSP + (1.0 - a_filter) * rawSP;
+  } else {
+    filteredSP = rawSP;
+  }
+  
+  let error = 0.0;
+  
+  if (loopType === 'velocity') {
+    error = filteredSP - motorSpeed;
+    integralAccumulator += error * Ts;
+    controlEffort = Kp * error + Ki * integralAccumulator;
+  } else {
+    error = filteredSP - motorPosition;
+    integralAccumulator += error * Ts;
+    controlEffort = Kp * error + Ki * integralAccumulator;
+  }
+  
+  // Saturación de voltaje a +-12V
+  const maxVoltage = 12.0;
+  let satActive = false;
+  if (controlEffort > maxVoltage) {
+    controlEffort = maxVoltage;
+    satActive = true;
+  } else if (controlEffort < -maxVoltage) {
+    controlEffort = -maxVoltage;
+    satActive = true;
+  }
+  
+  // Anti-windup condicional
+  if (satActive) {
+    integralAccumulator -= error * Ts;
+  }
+  
+  // Perturbación física
+  const torqueDist = (distPercent / 100.0) * 5.0 * Math.sign(motorSpeed || 1.0);
+  
+  // Integración numérica fina
+  const subSteps = 10;
+  const subDt = Ts / subSteps;
+  for (let j = 0; j < subSteps; j++) {
+    const dSpeed = (K * (controlEffort - torqueDist) - motorSpeed) / tau;
+    motorSpeed += dSpeed * subDt;
+    
+    // 1 rad/s = 57.2958 deg/s
+    const speedDeg = motorSpeed * 57.2958;
+    motorPosition += speedDeg * subDt;
+  }
+  
+  // Envolvente de posición en velocidad para evitar sobreflujo visual
+  if (loopType === 'velocity') {
+    motorPosition = (motorPosition % 360 + 360) % 360;
+  }
+  
+  // Registrar historial
+  simHistorySP.push(rawSP);
+  if (loopType === 'velocity') {
+    simHistoryY.push(motorSpeed);
+  } else {
+    simHistoryY.push(motorPosition);
+  }
+  simHistoryU.push(controlEffort);
+  
+  if (simHistoryY.length > simHistoryMax) {
+    simHistorySP.shift();
+    simHistoryY.shift();
+    simHistoryU.shift();
+  }
+  
+  // Rotar visualmente el piñón
+  const gear = document.getElementById('motor-gear');
+  if (gear) {
+    gear.setAttribute('transform', `rotate(${motorPosition})`);
+  }
+  
+  // Actualizar telemetría
+  document.getElementById('stat-y').textContent = (loopType === 'velocity') 
+    ? motorSpeed.toFixed(2) 
+    : motorPosition.toFixed(1) + ".00";
+  document.getElementById('stat-u').textContent = controlEffort.toFixed(2) + " V";
+  document.getElementById('stat-err').textContent = error.toFixed(2);
+  
+  drawOscilloscope();
+}
+
+function toggleSim() {
+  const btn = document.getElementById('sim-btn-play');
+  const icon = document.getElementById('sim-play-icon');
+  const text = document.getElementById('sim-play-text');
+  if (!btn) return;
+  
+  if (simRunning) {
+    simRunning = false;
+    clearInterval(simInterval);
+    btn.classList.remove('active-run');
+    if (icon) icon.textContent = "▶";
+    if (text) text.textContent = "Iniciar";
+  } else {
+    simRunning = true;
+    btn.classList.add('active-run');
+    if (icon) icon.textContent = "⏸";
+    if (text) text.textContent = "Pausar";
+    simInterval = setInterval(stepSimulation, 10);
+  }
+}
+
+function resetSim() {
+  if (simRunning) {
+    toggleSim();
+  }
+  motorSpeed = 0.0;
+  motorPosition = 0.0;
+  integralAccumulator = 0.0;
+  controlEffort = 0.0;
+  filteredSP = 0.0;
+  
+  simHistorySP = [];
+  simHistoryY = [];
+  simHistoryU = [];
+  
+  const gear = document.getElementById('motor-gear');
+  if (gear) {
+    gear.setAttribute('transform', `rotate(0)`);
+  }
+  
+  updateSimSliders();
+  drawOscilloscope();
+}
+
+function loadScenario(type) {
+  resetSim();
+  const K = parseFloat(document.getElementById('input-k').value) || 1.8524;
+  const tau = parseFloat(document.getElementById('input-tau').value) || 0.1485;
+  const loopType = document.getElementById('sim-loop-type');
+  const spSlider = document.getElementById('sim-slider-sp');
+  const distSlider = document.getElementById('sim-slider-dist');
+  const filterSelect = document.getElementById('sim-use-filter');
+  
+  if (type === 'perfect') {
+    loopType.value = "velocity";
+    changeSimLoop();
+    const zeta = 1.0; 
+    const wn = 25.0;  
+    const Kp = (2 * zeta * wn * tau - 1.0) / K;
+    const Ki = (wn * wn * tau) / K;
+    document.getElementById('sim-kp').value = Kp.toFixed(4);
+    document.getElementById('sim-ki').value = Ki.toFixed(4);
+    spSlider.value = "60";
+    distSlider.value = "0";
+    filterSelect.value = "no";
+  } 
+  else if (type === 'ringing') {
+    loopType.value = "velocity";
+    changeSimLoop();
+    const Kp = 3.5 / K;
+    const Ki = 80.0 / K;
+    document.getElementById('sim-kp').value = Kp.toFixed(4);
+    document.getElementById('sim-ki').value = Ki.toFixed(4);
+    spSlider.value = "80";
+    distSlider.value = "0";
+    filterSelect.value = "no";
+  } 
+  else if (type === 'instability') {
+    loopType.value = "velocity";
+    changeSimLoop();
+    document.getElementById('sim-kp').value = (8.5 / K).toFixed(4);
+    document.getElementById('sim-ki').value = (350.0 / K).toFixed(4);
+    spSlider.value = "40";
+    distSlider.value = "0";
+    filterSelect.value = "no";
+  } 
+  else if (type === 'disturbance') {
+    loopType.value = "velocity";
+    changeSimLoop();
+    const zeta = 0.707;
+    const wn = 15.0;
+    const Kp = (2 * zeta * wn * tau - 1.0) / K;
+    const Ki = (wn * wn * tau) / K;
+    document.getElementById('sim-kp').value = Kp.toFixed(4);
+    document.getElementById('sim-ki').value = Ki.toFixed(4);
+    spSlider.value = "50";
+    distSlider.value = "65"; 
+    filterSelect.value = "no";
+  }
+  
+  updateSimSliders();
+  toggleSim();
+}
+
+// Inicializar calculadora y simulador al cargar
 window.onload = function() {
   updateCalculator();
+  resetSim();
+  updateSimSliders();
 };
 </script>
 </body>
