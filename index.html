@@ -1034,6 +1034,42 @@
     transition: transform 0.05s linear;
   }
 
+  /* ── TYPING & CHAT ANIMATIONS ── */
+  @keyframes typing {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  .jimmy-user-bubble {
+    align-self: flex-end;
+    max-width: 85%;
+    background: linear-gradient(135deg, var(--accent2) 0%, #4f46e5 100%);
+    border-radius: 12px 12px 0 12px;
+    padding: 0.75rem 0.95rem;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.15);
+    word-break: break-word;
+    margin-bottom: 0.5rem;
+  }
+
+  .jimmy-bot-bubble {
+    align-self: flex-start;
+    max-width: 85%;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(6, 182, 212, 0.25);
+    border-radius: 0 12px 12px 12px;
+    padding: 0.75rem 0.95rem;
+    color: #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    word-break: break-word;
+    margin-bottom: 0.5rem;
+  }
+
+  #jimmybot-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 28px rgba(99,102,241,0.5) !important;
+  }
+
 </style>
 </head>
 <body>
@@ -2563,12 +2599,208 @@ function loadScenario(type) {
   toggleSim();
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// LÓGICA DEL ASISTENTE INTELIGENTE "JIMMYBOT" (GROQ API)
+// ─────────────────────────────────────────────────────────────────────────────
+let jimmyChatHistory = [];
+let jimmyBotOpen = false;
+
+function toggleJimmyBot() {
+  const panel = document.getElementById('jimmybot-panel');
+  if (!panel) return;
+  
+  if (jimmyBotOpen) {
+    // Cerrar panel
+    panel.style.opacity = '0';
+    panel.style.transform = 'translateY(20px)';
+    setTimeout(() => {
+      panel.style.display = 'none';
+    }, 300);
+    jimmyBotOpen = false;
+  } else {
+    // Abrir panel
+    panel.style.display = 'flex';
+    setTimeout(() => {
+      panel.style.opacity = '1';
+      panel.style.transform = 'translateY(0)';
+    }, 10);
+    jimmyBotOpen = true;
+    
+    // Enfocar input
+    setTimeout(() => {
+      document.getElementById('jimmybot-input').focus();
+    }, 350);
+  }
+}
+
+function handleJimmyKey(e) {
+  if (e.key === 'Enter') {
+    sendJimmyMessage();
+  }
+}
+
+async function sendJimmyMessage() {
+  const input = document.getElementById('jimmybot-input');
+  if (!input) return;
+  const text = input.value.trim();
+  if (text === "") return;
+  
+  input.value = "";
+  
+  const messagesContainer = document.getElementById('jimmybot-messages');
+  
+  // 1. Mostrar burbuja de usuario
+  const userDiv = document.createElement('div');
+  userDiv.className = 'jimmy-user-bubble';
+  userDiv.textContent = text;
+  messagesContainer.appendChild(userDiv);
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  
+  // Agregar al historial
+  jimmyChatHistory.push({ role: "user", content: text });
+  
+  // 2. Mostrar indicador de escritura (typing)
+  const typing = document.getElementById('jimmybot-typing');
+  typing.style.display = 'flex';
+  messagesContainer.appendChild(typing);
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  
+  // 3. Clave API obfuscada en frontend
+  const part1 = "gsk_z2JVFbCAX72FaPJXFURb";
+  const part2 = "WGdyb3FYahxcfGxK94IQuSiPAhmpeU5Y";
+  const gKey = part1 + part2;
+  
+  const systemPrompt = `Eres "JimmyBot", un asistente de inteligencia artificial experto y sarcástico pero de gran ayuda para la Guía de Laboratorio de Control de Velocidad y Posición de Motor DC N20 en la Universidad Autónoma de Occidente (UAO).
+Tu personalidad: Hablas en español con acento y modismos de Cali, Colombia ("ve", "mirá", "panita", "chuzito", "oís", pero mantente académico y profesional). Eres una divertida parodia interactiva del profesor de control. Eres exigente, irónico, pero quieres que tus estudiantes aprendan.
+Tu misión: Guiar paso a paso a los estudiantes en el procedimiento de conexiones, adquisición de datos con el firmware de Arduino Uno, el script de Python 'identificar_planta.py', el ajuste de mínimos cuadrados y la sintonización de controladores (PI clásico, LGR y Diofántica).
+
+REGLA CRÍTICA DE ORO:
+¡BAJO NINGUNA CIRCUNSTANCIA DEBES DAR LOS RESULTADOS NUMÉRICOS NI DISEÑAR LOS CONTROLADORES POR ELLOS!
+Si te piden:
+- "Dame las ganancias Kp y Ki para mi motor"
+- "Resuelve la ecuación de diferencias"
+- "Dime los valores de b0 y b1"
+- "Calcula la función de transferencia de mi planta con estos datos"
+DEBES responder guiándolos en el procedimiento paso a paso de cómo se calcula (ej. usar las fórmulas de segundo orden de amortiguamiento, usar la calculadora companion integrada en el dashboard, o correr el script de mínimos cuadrados en Python), pero NUNCA darles el resultado final calculado por ti. Recuérdales con ironía que "para eso tienen la calculadora interactiva arriba o el cerebro bien puesto, mirá".
+
+Mantén tus respuestas relativamente concisas, estructuradas en markdown, muy claras y motivadoras.`;
+
+  try {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${gKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "llama3-8b-8192",
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...jimmyChatHistory
+        ],
+        temperature: 0.7,
+        max_tokens: 800
+      })
+    });
+    
+    const data = await response.json();
+    typing.style.display = 'none';
+    
+    if (data.choices && data.choices[0]) {
+      const reply = data.choices[0].message.content;
+      
+      // Agregar al historial
+      jimmyChatHistory.push({ role: "assistant", content: reply });
+      
+      // Mostrar burbuja del bot
+      const botDiv = document.createElement('div');
+      botDiv.className = 'jimmy-bot-bubble';
+      
+      // Convertir saltos de línea y formato negrita básico
+      let htmlContent = reply
+        .replace(/\n/g, '<br>')
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+        .replace(/`([^`]+)`/g, '<code style="font-family:var(--font-mono); background:rgba(255,255,255,0.08); padding:0.1rem 0.3rem; border-radius:4px; color:var(--cyan);">$1</code>');
+      
+      botDiv.innerHTML = htmlContent;
+      messagesContainer.appendChild(botDiv);
+    } else {
+      throw new Error("Respuesta inválida de la API");
+    }
+  } catch (error) {
+    typing.style.display = 'none';
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'jimmy-bot-bubble';
+    errorDiv.style.borderColor = 'var(--accent)';
+    errorDiv.innerHTML = "⚠️ <strong>Error de Conexión:</strong> Ve panita, parece que se cayó el enlace con el servidor de Groq o la clave API expiró. ¡Revisa tu conexión!";
+    messagesContainer.appendChild(errorDiv);
+  }
+  
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
 // Inicializar calculadora y simulador al cargar
 window.onload = function() {
   updateCalculator();
   resetSim();
   updateSimSliders();
+  
+  // Vincular click al botón flotante
+  const jBtn = document.getElementById('jimmybot-btn');
+  if (jBtn) jBtn.addEventListener('click', toggleJimmyBot);
 };
 </script>
+
+<!-- ── JIMMYBOT FLOATING WIDGET ── -->
+<div id="jimmybot-widget" style="position:fixed; bottom:20px; right:20px; z-index:999; font-family:var(--font-sans);">
+  <!-- Floating Button -->
+  <button id="jimmybot-btn" style="background:var(--accent2); border:1.5px solid var(--accent2-glow); color:#fff; border-radius:100px; padding:0.75rem 1.4rem; display:flex; align-items:center; gap:0.6rem; cursor:pointer; font-weight:600; font-size:0.8rem; box-shadow:0 8px 24px rgba(99,102,241,0.35); transition:all 0.3s; letter-spacing:0.02em; outline:none;">
+    <span style="font-size:1.1rem;">🤖</span>
+    <span>Preguntar a JimmyBot</span>
+    <span style="width:8px; height:8px; background:#10b981; border-radius:50%; display:inline-block; box-shadow:0 0 6px #10b981;"></span>
+  </button>
+
+  <!-- Chat Panel -->
+  <div id="jimmybot-panel" style="display:none; position:absolute; bottom:65px; right:0; width:360px; height:480px; background:rgba(10, 15, 26, 0.95); backdrop-filter:blur(16px); border:1.5px solid var(--border); border-radius:14px; box-shadow:0 12px 40px rgba(0,0,0,0.6); flex-direction:column; overflow:hidden; transition:all 0.3s; opacity:0; transform:translateY(20px);">
+    <!-- Header -->
+    <div style="background:rgba(255,255,255,0.02); border-bottom:1px solid rgba(255,255,255,0.06); padding:0.9rem 1.2rem; display:flex; justify-content:space-between; align-items:center;">
+      <div style="display:flex; align-items:center; gap:0.6rem;">
+        <div style="width:32px; height:32px; background:rgba(99,102,241,0.15); border:1.5px solid var(--accent2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.1rem; box-shadow:0 0 10px rgba(99,102,241,0.25);">🤖</div>
+        <div style="display:flex; flex-direction:column;">
+          <span style="font-size:0.85rem; font-weight:700; color:#fff;">JimmyBot v1.0</span>
+          <span style="font-size:0.6rem; color:#10b981; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.05em; display:flex; align-items:center; gap:0.25rem;"><span style="width:5px; height:5px; background:#10b981; border-radius:50%;"></span>Online</span>
+        </div>
+      </div>
+      <button onclick="toggleJimmyBot()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size:1.2rem; font-weight:300; transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--text-muted)'">×</button>
+    </div>
+
+    <!-- Messages Container -->
+    <div id="jimmybot-messages" style="flex:1; padding:1.2rem; overflow-y:auto; display:flex; flex-direction:column; gap:0.9rem; font-size:0.8rem; line-height:1.5;">
+      <!-- Welcome Message -->
+      <div class="jimmy-bot-bubble">
+        ¡Hola ve! Soy <strong>JimmyBot</strong>, tu asistente de laboratorio. 😎 <br><br>
+        Estoy listo para guiarte en el montaje del motor N20, la lectura del encoder por interrupciones o la sintonización matemática.<br><br>
+        <em>Eso sí, mirá: ni me preguntés por los resultados de tus constantes ni me pidas que te diseñe las ganancias Kp o Ki del parcial, porque te anulo el laboratorio. ¡A pensar!</em> ¿En qué parte del procedimiento vas?
+      </div>
+    </div>
+
+    <!-- Typing Indicator -->
+    <div id="jimmybot-typing" style="display:none; padding:0.5rem 1.2rem; align-self:flex-start; margin-left:0.5rem; background:rgba(255,255,255,0.02); border-radius:100px; gap:0.25rem; margin-bottom:0.5rem;">
+      <span class="typing-dot" style="width:6px; height:6px; background:var(--cyan); border-radius:50%; display:inline-block; animation: typing 1.4s infinite both;"></span>
+      <span class="typing-dot" style="width:6px; height:6px; background:var(--cyan); border-radius:50%; display:inline-block; animation: typing 1.4s infinite both 0.2s;"></span>
+      <span class="typing-dot" style="width:6px; height:6px; background:var(--cyan); border-radius:50%; display:inline-block; animation: typing 1.4s infinite both 0.4s;"></span>
+    </div>
+
+    <!-- Input Footer -->
+    <div style="background:rgba(255,255,255,0.01); border-top:1px solid rgba(255,255,255,0.06); padding:0.75rem 0.95rem; display:flex; gap:0.5rem; align-items:center;">
+      <input type="text" id="jimmybot-input" placeholder="Pregunta sobre la guía o firmware..." style="flex:1; background:rgba(8, 12, 20, 0.6); border:1.5px solid var(--border); border-radius:8px; padding:0.55rem 0.75rem; color:#fff; font-family:var(--font-sans); font-size:0.78rem; transition:all 0.3s; outline:none;" onkeypress="handleJimmyKey(event)">
+      <button onclick="sendJimmyMessage()" style="background:var(--accent2); border:none; color:#fff; width:34px; height:34px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:0.9rem; transition:all 0.2s; box-shadow:0 0 10px rgba(99,102,241,0.25);">
+        ✈
+      </button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
