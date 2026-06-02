@@ -12,9 +12,34 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { messages } = req.body;
+  // Parse body robustly (handles raw streams, string bodies and pre-parsed Vercel payloads)
+  let body = req.body;
+  if (typeof body === 'string') {
+    try {
+      body = JSON.parse(body);
+    } catch (e) {
+      body = {};
+    }
+  } else if (!body) {
+    try {
+      const buffers = [];
+      for await (const chunk of req) {
+        buffers.push(chunk);
+      }
+      const rawBody = Buffer.concat(buffers).toString();
+      body = JSON.parse(rawBody);
+    } catch (e) {
+      body = {};
+    }
+  }
+
+  const messages = body ? body.messages : null;
   if (!messages) {
-    return res.status(400).json({ error: 'Missing messages payload' });
+    return res.status(400).json({ 
+      error: 'Missing messages payload',
+      receivedType: typeof req.body,
+      hasBody: !!req.body
+    });
   }
 
   // Clave API segura del lado del servidor (ofuscada para Push Protection)
