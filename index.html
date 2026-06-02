@@ -801,19 +801,19 @@
   /* ── SIMULATOR STYLES ── */
   .sim-container {
     display: grid;
-    grid-template-columns: 1fr 1.3fr;
-    gap: 1.5rem;
-    margin: 2.5rem 0;
+    grid-template-columns: 1.1fr 1.4fr;
+    gap: 2rem;
+    margin: 3rem 0;
   }
   
   .sim-panel {
     background: rgba(15, 23, 42, 0.75);
     border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 1.5rem;
+    padding: 1.8rem;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.25rem;
     box-shadow: 0 8px 32px rgba(0,0,0,0.4);
   }
 
@@ -962,7 +962,7 @@
   .sim-canvas-container {
     position: relative;
     width: 100%;
-    height: 180px;
+    height: 230px;
     background: rgba(8, 12, 20, 0.8);
     border: 1px solid rgba(255,255,255,0.06);
     border-radius: 10px;
@@ -987,7 +987,7 @@
     border: 1px solid rgba(255,255,255,0.04);
     border-radius: 10px;
     padding: 1rem;
-    height: 110px;
+    height: 120px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1251,10 +1251,10 @@
 
   <div class="formula-box">
     <span class="formula-label">Función de Transferencia de Velocidad</span>
-    $$ G_v(s) = \frac{Y(s)}{U(s)} = \frac{K}{\tau s + 1} $$
+    <div style="font-size:1.05rem; text-align:center; padding:0.5rem 0; font-family:var(--font-mono); color:var(--cyan);">G_v(s) = Y(s) / U(s) = K / (τ * s + 1)</div>
     Donde:<br>
-    · <span class="hl">$K$</span> = Ganancia estática del motor en estado estable $\text{(V/V o deg/s por Voltio)}$.<br>
-    · <span class="hl2">$\tau$</span> = Constante de tiempo del motor en segundos $\text{(tiempo en alcanzar el 63.2% de la velocidad final)}$.
+    · <span class="hl">K</span> = Ganancia estática del motor en estado estable (V/V o grados/s por Voltio).<br>
+    · <span class="hl2">τ</span> = Constante de tiempo del motor en segundos (tiempo en alcanzar el 63.2% de la velocidad final).
   </div>
 
   <div class="info-box">
@@ -1262,7 +1262,7 @@
     <div class="info-text">
       <strong>Metodología de Identificación:</strong> 
       1. Cargar el firmware de adquisición en el Arduino Uno (Sección 04).
-      2. Aplicar un escalón limpio de voltaje constante (ej: $2.0\text{V}$ aplicando PWM fijo) al inducido.
+      2. Aplicar un escalón limpio de voltaje constante (ejemplo: 2.0 V aplicando PWM fijo) al inducido.
       3. Capturar la telemetría en un CSV y usar MATLAB o Python para estimar los valores óptimos mediante curvas de mínimos cuadrados no lineales.
     </div>
   </div>
@@ -1388,7 +1388,7 @@
   </div>
 
   <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.75; margin-bottom:1.5rem;">
-    El Arduino Uno corre un script determinista regulado a una tasa fija de muestreo $T_s = 10\text{ ms}$ para capturar la telemetría del encoder por interrupciones de flancos e inyectar el ciclo de control discreto.
+    El Arduino Uno corre un script determinista regulado a una tasa fija de muestreo Ts = 10 ms para capturar la telemetría del encoder por interrupciones de flancos e inyectar el ciclo de control discreto.
   </p>
 
   <div class="tabs">
@@ -1402,7 +1402,7 @@
     <div class="card">
       <div class="card-title">Lectura del encoder en cuadratura</div>
       <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.75; margin-bottom:1rem;">
-        El encoder magnético de cuadratura genera dos señales de pulsos cuadradas desfasadas $90^\circ$ en los terminales <code>C1</code> y <code>C2</code>. Al usar las interrupciones externas en <code>D2</code> y <code>D3</code>, el microcontrolador evalúa el estado del canal no-interrumpido en cada flanco para acumular o decrementar los ticks totales y determinar con precisión absoluta la dirección física de rotación.
+        El encoder magnético de cuadratura genera dos señales de pulsos cuadradas desfasadas 90° en los terminales <code>C1</code> y <code>C2</code>. Al usar las interrupciones externas en <code>D2</code> y <code>D3</code>, el microcontrolador evalúa el estado del canal no-interrumpido en cada flanco para acumular o decrementar los ticks totales y determinar con precisión absoluta la dirección física de rotación.
       </p>
       <div class="formula-box">
         <span class="formula-label">Cálculo de velocidad desde ticks</span>
@@ -1422,7 +1422,7 @@
     <div class="card">
       <div class="card-title">Loop regulado de tiempo real</div>
       <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.75; margin-bottom:1rem;">
-        Para simular el muestreo discreto real, el firmware regula el cálculo del algoritmo mediante el desbordamiento controlado del contador de microsegundos interno (<code>micros()</code>). Si el incremento temporal es menor a $10000\text{ }\mu\text{s}$ (10 ms), el bucle principal omite la ley de control, simulando un reloj de tiempo real determinista.
+        Para simular el muestreo discreto real, el firmware regula el cálculo del algoritmo mediante el desbordamiento controlado del contador de microsegundos interno (<code>micros()</code>). Si el incremento temporal es menor a 10000 µs (10 ms), el bucle principal omite la ley de control, simulando un reloj de tiempo real determinista.
       </p>
       <div class="formula-box">
         <span class="formula-label">Ley de Control de Diferencia Discreta</span>
@@ -1840,17 +1840,17 @@ if __name__ == "__main__":
   </div>
 
   <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.75; margin-bottom:1.5rem;">
-    Una vez modelada la planta $G_v(s)$, diseñamos el lazo de control discreto de velocidad para garantizar exactitud frente al setpoint, estabilidad robusta y rechazo a perturbaciones físicas de carga.
+    Una vez modelada la planta G_v(s), diseñamos el lazo de control discreto de velocidad para garantizar exactitud frente al setpoint, estabilidad robusta y rechazo a perturbaciones físicas de carga.
   </p>
 
   <div class="card" style="border-color:rgba(99, 102, 241, 0.25); border-left:4px solid var(--accent2);">
     <div class="card-title" style="color:var(--accent2);">La Clave del Control Discreto</div>
     <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.75; margin-bottom:1rem;">
-      Las leyes de control analógicas $C(s)$ se programan discretizadas en el microcontrolador. El bloque de lazo de control calcula en cada intervalo de tiempo la señal de control sumando la contribución actual e integral mediante diferencias recurrentes.
+      Las leyes de control analógicas C(s) se programan discretizadas en el microcontrolador. El bloque de lazo de control calcula en cada intervalo de tiempo la señal de control sumando la contribución actual e integral mediante diferencias recurrentes.
     </p>
     <div class="formula-box">
       <span class="formula-label">Fórmula de un Controlador Discreto PI</span>
-      $$ C(z) = \frac{U(z)}{E(z)} = \frac{b_0 z + b_1}{z - 1} $$
+      <div style="font-size:1.05rem; text-align:center; padding:0.4rem 0; font-family:var(--font-mono); color:var(--cyan);">C(z) = U(z) / E(z) = (b0 * z + b1) / (z - 1)</div>
     </div>
   </div>
 
@@ -1860,11 +1860,11 @@ if __name__ == "__main__":
       <span class="method-tag tag-pi">Estándar</span>
     </div>
     <div class="method-desc">
-      Se define el polinomio de segundo orden deseado: **$s^2 + 2\zeta\omega_n s + \omega_n^2 = 0$**. Ajustando $\zeta \approx 0.707$ para bajo sobreimpulso y $\omega_n$ según la velocidad de asentamiento requerida, las ganancias continuas se despejan directamente:
+      Se define el polinomio de segundo orden deseado: **s^2 + 2*ζ*wn*s + wn^2 = 0**. Ajustando ζ ≈ 0.707 para bajo sobreimpulso y wn según la velocidad de asentamiento requerida, las ganancias continuas se despejan directamente:
       <br><br>
-      <strong style="color:var(--accent);">$K_p = \frac{2\zeta\omega_n\tau - 1}{K}$</strong> &nbsp;&nbsp; y &nbsp;&nbsp; <strong style="color:var(--accent);">$K_i = \frac{\omega_n^2 \tau}{K}$</strong>
+      <strong style="color:var(--accent);">Kp = (2*ζ*wn*τ - 1) / K</strong> &nbsp;&nbsp; y &nbsp;&nbsp; <strong style="color:var(--accent);">Ki = (wn^2 * τ) / K</strong>
       <br><br>
-      Posteriormente, aplicamos la transformación bilinear de Tustin para pasar $C(s) = K_p + \frac{K_i}{s}$ al plano discreto, obteniendo de forma automática los coeficientes $b_0$ y $b_1$ para tu ecuación en diferencias.
+      Posteriormente, aplicamos la transformación bilinear de Tustin para pasar C(s) = Kp + Ki/s al plano discreto, obteniendo de forma automática los coeficientes b0 y b1 para tu ecuación en diferencias.
     </div>
   </div>
 
@@ -1874,7 +1874,7 @@ if __name__ == "__main__":
       <span class="method-tag tag-lgr">Gráfico</span>
     </div>
     <div class="method-desc">
-      Trabajando en el plano $Z$ directo, cancelamos el polo lento de tu planta ($z = a_1 = e^{-T_s/\tau}$) inyectando un cero del controlador en $z_c = a_1$ y posicionando un polo integrador en la frontera unitaria en $z = 1$. La ganancia estática $K_c$ se calcula aplicando la condición de magnitud del LGR en el polo deseado discreto $z_d = e^{s_d T_s}$.
+      Trabajando en el plano Z directo, cancelamos el polo lento de tu planta (z = a1 = e^(-Ts/τ)) inyectando un cero del controlador en zc = a1 y posicionando un polo integrador en la frontera unitaria en z = 1. La ganancia estática Kc se calcula aplicando la condición de magnitud del LGR en el polo deseado discreto zd = e^(sd * Ts).
     </div>
   </div>
 
@@ -1884,7 +1884,7 @@ if __name__ == "__main__":
       <span class="method-tag tag-alg">Algebraico</span>
     </div>
     <div class="method-desc">
-      Método algebraico riguroso en tiempo discreto. Se plantea la ecuación diofántica lineal: **$A(z)L(z) + B(z)P(z) = A_m(z)$**, donde $A(z)$ y $B(z)$ representan tu planta y $A_m(z)$ el lazo cerrado deseado. Se resuelve mediante matrices de Sylvester, asegurando estabilidad robusta ante cualquier perturbación física.
+      Método algebraico riguroso en tiempo discreto. Se plantea la ecuación diofántica lineal: **A(z)*L(z) + B(z)*P(z) = Am(z)**, donde A(z) y B(z) representan tu planta y Am(z) el lazo cerrado deseado. Se resuelve mediante matrices de Sylvester, asegurando estabilidad robusta ante cualquier perturbación física.
     </div>
   </div>
 
@@ -1896,7 +1896,7 @@ if __name__ == "__main__":
     <div class="method-desc">
       Atenúa las oscilaciones abruptas causadas por cambios instantáneos de setpoint (escalón) suavizando la consigna de entrada mediante un filtro de primer orden dinámico antes de entrar al comparador de error:
       <br><br>
-      $$ F(z) = \frac{1 - a_1}{z - a_1} $$
+      <div style="font-size:1.05rem; text-align:center; padding:0.4rem 0; font-family:var(--font-mono); color:var(--cyan);">F(z) = (1 - a1) / (z - a1)</div>
     </div>
   </div>
 </section>
@@ -1909,7 +1909,7 @@ if __name__ == "__main__":
   </div>
 
   <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.75; margin-bottom:1.5rem;">
-    ¡Pon a prueba tu controlador diseñado antes de cargarlo al hardware real! Este simulador físico interactivo integra numéricamente mediante aproximaciones finas la dinámica de primer orden del motor $G_v(s) = \frac{K}{\tau s + 1}$ bajo control discreto a una tasa de muestreo determinista de $T_s = 10\text{ ms}$. Experimenta con saturación de voltaje, perturbaciones abruptas y presets dinámicos.
+    ¡Pon a prueba tu controlador diseñado antes de cargarlo al hardware real! Este simulador físico interactivo integra numéricamente mediante aproximaciones finas la dinámica de primer orden del motor G_v(s) = K / (τ * s + 1) bajo control discreto a una tasa de muestreo determinista de Ts = 10 ms. Experimenta con saturación de voltaje, perturbaciones abruptas y presets dinámicos.
   </p>
 
   <div class="sim-container">
@@ -1933,17 +1933,18 @@ if __name__ == "__main__":
 
       <div class="sim-controls-grid" style="margin-top: -0.25rem;">
         <div class="calc-input-group">
-          <label>Tipo de Lazo</label>
-          <select id="sim-loop-type" class="calc-select" onchange="changeSimLoop()">
-            <option value="velocity">Control de Velocidad (PI)</option>
-            <option value="position">Control de Posición (PI + Integrador)</option>
-          </select>
+          <label>Modo de Simulación</label>
+          <div class="tabs" style="margin-bottom: 0; display: flex; gap: 0.3rem; border: none; background: transparent;">
+            <button id="sim-mode-vel" class="tab-btn active" onclick="setSimMode('velocity')" style="flex:1; padding: 0.45rem 0.2rem; font-size: 0.65rem; border-radius: 6px;">Velocidad</button>
+            <button id="sim-mode-pos" class="tab-btn" onclick="setSimMode('position')" style="flex:1; padding: 0.45rem 0.2rem; font-size: 0.65rem; border-radius: 6px;">Posición</button>
+          </div>
+          <input type="hidden" id="sim-loop-type" value="velocity">
         </div>
         <div class="calc-input-group">
           <label>Prefiltro Activo</label>
-          <select id="sim-use-filter" class="calc-select" onchange="syncSimParams()">
-            <option value="no">Sin Filtro de Referencia</option>
-            <option value="yes">Filtro de Referencia Habilitado</option>
+          <select id="sim-use-filter" class="calc-select" onchange="syncSimParams()" style="height: 31px; padding: 0.4rem 0.6rem; font-size: 0.75rem;">
+            <option value="no">Sin Filtro</option>
+            <option value="yes">Filtro Activo</option>
           </select>
         </div>
       </div>
@@ -2065,12 +2066,12 @@ if __name__ == "__main__":
   </div>
 
   <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.75; margin-bottom:1.5rem;">
-    Para regular la posición del rotor en lugar de la velocidad, añadimos un **integrador puro ($1/s$)** al modelo de velocidad previamente identificado, ya que la posición angular es el acumulado temporal de la velocidad instantánea:
+    Para regular la posición del rotor en lugar de la velocidad, añadimos un **integrador puro (1/s)** al modelo de velocidad previamente identificado, ya que la posición angular es el acumulado temporal de la velocidad instantánea:
   </p>
 
   <div class="formula-box">
     <span class="formula-label">Función de transferencia de posición</span>
-    $$ G_p(s) = G_v(s) \cdot \frac{1}{s} = \frac{K_{pos}}{s(\tau s + 1)} $$
+    <div style="font-size:1.05rem; text-align:center; padding:0.5rem 0; font-family:var(--font-mono); color:var(--cyan);">G_p(s) = G_v(s) * (1 / s) = K_pos / [s * (τ * s + 1)]</div>
   </div>
 
   <div class="step-flow">
@@ -2372,6 +2373,25 @@ function updateSimSliders() {
   }
 }
 
+function setSimMode(mode) {
+  const velBtn = document.getElementById('sim-mode-vel');
+  const posBtn = document.getElementById('sim-mode-pos');
+  const hiddenInput = document.getElementById('sim-loop-type');
+  if (!velBtn || !posBtn || !hiddenInput) return;
+  
+  if (mode === 'velocity') {
+    velBtn.classList.add('active');
+    posBtn.classList.remove('active');
+    hiddenInput.value = 'velocity';
+  } else {
+    posBtn.classList.add('active');
+    velBtn.classList.remove('active');
+    hiddenInput.value = 'position';
+  }
+  
+  changeSimLoop();
+}
+
 function changeSimLoop() {
   const loopType = document.getElementById('sim-loop-type').value;
   const spSlider = document.getElementById('sim-slider-sp');
@@ -2543,14 +2563,12 @@ function loadScenario(type) {
   resetSim();
   const K = parseFloat(document.getElementById('input-k').value) || 1.8524;
   const tau = parseFloat(document.getElementById('input-tau').value) || 0.1485;
-  const loopType = document.getElementById('sim-loop-type');
   const spSlider = document.getElementById('sim-slider-sp');
   const distSlider = document.getElementById('sim-slider-dist');
   const filterSelect = document.getElementById('sim-use-filter');
   
   if (type === 'perfect') {
-    loopType.value = "velocity";
-    changeSimLoop();
+    setSimMode("velocity");
     const zeta = 1.0; 
     const wn = 25.0;  
     const Kp = (2 * zeta * wn * tau - 1.0) / K;
@@ -2562,8 +2580,7 @@ function loadScenario(type) {
     filterSelect.value = "no";
   } 
   else if (type === 'ringing') {
-    loopType.value = "velocity";
-    changeSimLoop();
+    setSimMode("velocity");
     const Kp = 3.5 / K;
     const Ki = 80.0 / K;
     document.getElementById('sim-kp').value = Kp.toFixed(4);
@@ -2573,8 +2590,7 @@ function loadScenario(type) {
     filterSelect.value = "no";
   } 
   else if (type === 'instability') {
-    loopType.value = "velocity";
-    changeSimLoop();
+    setSimMode("velocity");
     document.getElementById('sim-kp').value = (8.5 / K).toFixed(4);
     document.getElementById('sim-ki').value = (350.0 / K).toFixed(4);
     spSlider.value = "40";
@@ -2582,8 +2598,7 @@ function loadScenario(type) {
     filterSelect.value = "no";
   } 
   else if (type === 'disturbance') {
-    loopType.value = "velocity";
-    changeSimLoop();
+    setSimMode("velocity");
     const zeta = 0.707;
     const wn = 15.0;
     const Kp = (2 * zeta * wn * tau - 1.0) / K;
