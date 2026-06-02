@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de Laboratorio — Control de Velocidad y Posición Motor DC N20</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #f8f6f0;
+    --bg2:     #eeebe2;
+    --bg3:     #e5e1d6;
+    --card:    #ffffff;
+    --card2:   #faf8f4;
+    --accent:  #c0392b;
+    --accent2: #2c3e6b;
+    --accent3: #e67e22;
+    --orange:  #d35400;
+    --purple:  #6c3483;
+    --teal:    #1a7a6e;
+    --yellow:  #b7860b;
+    --text:    #1a1a2a;
+    --text2:   #4a4a5a;
+    --text3:   #7a7a8a;
+    --border:  rgba(26,26,42,0.1);
+    --border2: rgba(192,57,43,0.3);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* Grid sutil */
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(rgba(26,26,42,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26,26,42,0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events:none; z-index:0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background: rgba(248,246,240,0.97);
+    backdrop-filter: blur(12px);
+    border-bottom: 2px solid var(--accent);
+    padding: 0 2rem;
+    height: 64px;
+    display:flex; align-items:center; justify-content:space-between;
+    box-shadow: 0 2px 12px rgba(212,56,13,0.08);
+  }
+
+  .header-left { display:flex; align-items:center; gap:1rem; }
+
+  .uao-logo {
+    width: 42px; height: 42px;
+    background: #ffffff;
+    border: 2px solid #c0392b;
+    border-radius: 6px;
+    display:flex; align-items:center; justify-content:center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 0.05em;
+    text-align: center;
+    line-height: 1.3;
+    padding: 0.2rem;
+    flex-shrink: 0;
+  }
+
+  .header-title {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header-univ {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--text2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .header-course {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  nav { display:flex; gap:0.2rem; }
+  nav a {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text2);
+    text-decoration:none;
+    padding: 0.3rem 0.65rem;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+  }
+  nav a:hover {
+    color: var(--accent);
+    border-color: var(--border2);
+    background: rgba(212,56,13,0.06);
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar {
+    position:fixed; top:64px; left:0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--orange), var(--yellow));
+    transition: width 0.1s; z-index:99;
+    box-shadow: 0 0 6px rgba(212,56,13,0.4);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position:relative;
+    min-height: 100vh;
+    display:flex; align-items:center; justify-content:center;
+    text-align:center;
+    padding: 8rem 2rem 4rem;
+    overflow:hidden;
+    background: linear-gradient(160deg, #ffffff 0%, #f8f6f0 50%, #ffffff 100%);
+  }
+
+  .hero-stripe {
+    position:absolute; top:0; left:0; right:0;
+    height: 4px;
+    background: linear-gradient(90deg, #d4380d, #ea580c, #d97706, #16a34a, #0891b2, #1d4ed8, #7c3aed);
+  }
+
+  .hero-circle1 {
+    position:absolute; width:500px; height:500px; border-radius:50%;
+    background: radial-gradient(circle, rgba(212,56,13,0.07) 0%, transparent 70%);
+    top:30%; left:20%; pointer-events:none;
+  }
+  .hero-circle2 {
+    position:absolute; width:400px; height:400px; border-radius:50%;
+    background: radial-gradient(circle, rgba(212,56,13,0.04) 0%, transparent 70%);
+    top:20%; right:15%; pointer-events:none;
+  }
+
+  .badge {
+    display:inline-flex; align-items:center; gap:0.5rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: #fff;
+    background: var(--accent);
+    padding: 0.35rem 1.1rem;
+    border-radius: 100px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(212,56,13,0.35);
+  }
+
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 4.2rem);
+    font-weight: 800;
+    line-height: 1.05;
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+  .hero h1 em {
+    font-style:normal;
+    color: var(--accent);
+  }
+  .hero h1 strong {
+    color: var(--accent2);
+  }
+
+  .hero-sub {
+    font-size: 1rem;
+    color: var(--text2);
+    max-width: 560px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.7;
+  }
+
+  .hero-univ-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    display:flex; align-items:center; justify-content:center; gap:0.5rem;
+  }
+  .hero-univ-name::before,
+  .hero-univ-name::after {
+    content:''; flex:1; max-width:80px;
+    height:1px; background: var(--border);
+  }
+
+  .steps-grid {
+    display:flex; gap:0.6rem; justify-content:center; flex-wrap:wrap;
+  }
+
+  .step-pill {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    border: 1.5px solid var(--border);
+    color: var(--text2);
+    cursor:pointer; transition: all 0.2s;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    text-decoration:none; display:inline-block;
+    background: var(--card);
+  }
+  .step-pill:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(212,56,13,0.04);
+    box-shadow: 0 2px 8px rgba(212,56,13,0.15);
+  }
+
+  /* ── MAIN ── */
+  main {
+    position:relative; z-index:1;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 2rem 2rem 6rem;
+  }
+
+  /* ── SECTION ── */
+  .section { margin-bottom: 4.5rem; }
+
+  .section-header {
+    display:flex; align-items:center; gap:1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--border);
+    position:relative;
+  }
+  .section-header::after {
+    content:''; position:absolute; bottom:-2px; left:0;
+    width:60px; height:2px;
+    background: var(--accent);
+    border-radius:2px;
+  }
+
+  .section-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: #fff;
+    background: var(--accent);
+    padding: 0.25rem 0.7rem;
+    border-radius: 4px;
+    flex-shrink:0;
+    box-shadow: 0 2px 6px rgba(212,56,13,0.3);
+  }
+
+  .section-title {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .card:hover {
+    border-color: rgba(212,56,13,0.3);
+    box-shadow: 0 6px 20px rgba(212,56,13,0.08);
+    transform: translateY(-2px);
+  }
+
+  .card-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display:flex; align-items:center; gap:0.5rem;
+  }
+  .card-title::before {
+    content:''; width:4px; height:14px;
+    background: var(--accent); border-radius:2px; display:block;
+  }
+
+  /* ── MATERIALES GRID ── */
+  .materials-grid {
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 0.85rem;
+  }
+
+  .material-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 1.1rem 1.25rem;
+    transition: all 0.2s;
+    position:relative; overflow:hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .material-card::before {
+    content:''; position:absolute; top:0; left:0; right:0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--orange));
+    opacity:0; transition: opacity 0.2s;
+  }
+  .material-card:hover::before { opacity:1; }
+  .material-card:hover {
+    border-color: rgba(212,56,13,0.25);
+    box-shadow: 0 6px 18px rgba(212,56,13,0.1);
+    transform: translateY(-3px);
+  }
+  .material-name {
+    font-size: 0.88rem; font-weight:700;
+    color: var(--text); margin-bottom:0.3rem;
+  }
+  .material-desc {
+    font-size: 0.73rem; color: var(--text2);
+    line-height:1.55; font-family: 'Space Mono', monospace;
+  }
+
+  /* ── SPEC TABLE ── */
+  .spec-table {
+    width:100%; border-collapse:collapse;
+    font-family: 'Space Mono', monospace; font-size:0.72rem;
+    margin-top:0.75rem;
+  }
+  .spec-table th {
+    text-align:left; padding:0.5rem 0.75rem;
+    background: rgba(192,57,43,0.07);
+    color: var(--accent); font-size:0.6rem;
+    text-transform:uppercase; letter-spacing:0.1em;
+  }
+  .spec-table td {
+    padding:0.5rem 0.75rem;
+    border-bottom: 1px solid rgba(26,26,46,0.06);
+    color: var(--text2);
+  }
+  .spec-table tr:last-child td { border-bottom:none; }
+  .spec-table td:first-child { color:var(--text); font-weight:600; }
+
+  /* ── STEP FLOW ── */
+  .step-flow { display:flex; flex-direction:column; position:relative; }
+  .step-flow::before {
+    content:''; position:absolute;
+    left:19px; top:30px; bottom:30px; width:2px;
+    background: linear-gradient(180deg, var(--accent) 0%, var(--accent2) 100%);
+    opacity:0.2;
+  }
+
+  .flow-step { display:flex; gap:1.25rem; padding:0.85rem 0; position:relative; }
+
+  .flow-num {
+    width:38px; height:38px; border-radius:50%;
+    background: var(--card);
+    border: 2px solid var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem; font-weight:700;
+    color: var(--accent);
+    flex-shrink:0; position:relative; z-index:1;
+    box-shadow: 0 2px 8px rgba(212,56,13,0.15);
+  }
+
+  .flow-content { flex:1; padding-top:0.35rem; }
+  .flow-title {
+    font-size:0.9rem; font-weight:700;
+    color:var(--text); margin-bottom:0.25rem;
+  }
+  .flow-desc {
+    font-size:0.8rem; color:var(--text2); line-height:1.65;
+  }
+  .flow-desc code {
+    font-family: 'Space Mono', monospace;
+    color: var(--accent2); font-size:0.73rem;
+    background: rgba(29,78,216,0.07);
+    padding: 0.1rem 0.35rem; border-radius:3px;
+  }
+
+  /* ── INFO BOXES ── */
+  .info-box {
+    display:flex; gap:0.85rem;
+    background: rgba(8,145,178,0.05);
+    border: 1.5px solid rgba(8,145,178,0.2);
+    border-left: 4px solid var(--teal);
+    border-radius: 0 10px 10px 0;
+    padding: 0.9rem 1.1rem;
+    margin: 0.85rem 0;
+  }
+  .info-icon { font-size:1rem; flex-shrink:0; margin-top:0.1rem; }
+  .info-text { font-size:0.8rem; color:var(--text2); line-height:1.65; }
+  .info-text strong { color:var(--text); }
+  .info-text code {
+    font-family: 'Space Mono', monospace; font-size:0.72rem;
+    background: rgba(26,26,46,0.07);
+    padding:0.1rem 0.3rem; border-radius:3px; color:var(--accent2);
+  }
+
+  .warn-box {
+    background: rgba(234,88,12,0.05);
+    border-color: rgba(234,88,12,0.25);
+    border-left-color: var(--orange);
+  }
+  .tip-box {
+    background: rgba(22,163,74,0.05);
+    border-color: rgba(22,163,74,0.2);
+    border-left-color: var(--accent3);
+  }
+
+  /* ── FORMULA ── */
+  .formula-box {
+    background: linear-gradient(135deg, rgba(44,62,107,0.05) 0%, rgba(192,57,43,0.04) 100%);
+    border: 1.5px solid rgba(29,78,216,0.18);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 0.85rem 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.77rem; color:var(--text); line-height:1.9;
+    position:relative;
+  }
+  .formula-box .formula-label {
+    font-size:0.58rem; color:var(--accent2);
+    text-transform:uppercase; letter-spacing:0.15em;
+    position:absolute; top:-0.5rem; left:1rem;
+    background:var(--bg); padding:0 0.5rem;
+  }
+  .formula-box .hl  { color:#d4380d; font-weight:700; }
+  .formula-box .hl2 { color:#1d4ed8; font-weight:600; }
+  .formula-box .hl3 { color:#7c3aed; }
+  .formula-box .hlg { color:#16a34a; font-weight:600; }
+
+  /* ── CONEXIONES IMAGE ── */
+  .img-conexiones {
+    width:100%; border-radius:12px;
+    border: 2px solid var(--border);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    display:block; margin: 1rem 0;
+  }
+
+  /* ── TABS ── */
+  .tabs { display:flex; gap:0.4rem; margin-bottom:1rem; flex-wrap:wrap; }
+  .tab-btn {
+    font-family: 'Space Mono', monospace; font-size:0.63rem;
+    padding: 0.4rem 1rem; border-radius:6px;
+    border: 1.5px solid var(--border);
+    background: var(--card); color:var(--text2);
+    cursor:pointer; transition: all 0.2s;
+    letter-spacing:0.05em; text-transform:uppercase;
+  }
+  .tab-btn.active {
+    background: var(--accent); color:#fff;
+    border-color: var(--accent);
+    box-shadow: 0 3px 10px rgba(212,56,13,0.3);
+  }
+  .tab-pane { display:none; }
+  .tab-pane.active { display:block; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ── METHOD CARDS ── */
+  .method-card {
+    background: var(--card2);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 0.85rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .method-card:hover {
+    border-color: rgba(212,56,13,0.2);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+  }
+
+  .method-title {
+    font-size: 0.9rem; font-weight:700;
+    color:var(--text); margin-bottom:0.6rem;
+    display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;
+  }
+  .method-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem; padding:0.15rem 0.55rem;
+    border-radius:4px; text-transform:uppercase; letter-spacing:0.08em;
+  }
+  .tag-pi    { background:rgba(29,78,216,0.1);  color:#1d4ed8; border:1px solid rgba(29,78,216,0.25); }
+  .tag-lgr   { background:rgba(124,58,237,0.1); color:#7c3aed; border:1px solid rgba(124,58,237,0.25); }
+  .tag-alg   { background:rgba(22,163,74,0.1);  color:#16a34a; border:1px solid rgba(22,163,74,0.25); }
+  .tag-filter{ background:rgba(8,145,178,0.1);  color:#0891b2; border:1px solid rgba(8,145,178,0.25); }
+
+  .method-desc { font-size:0.8rem; color:var(--text2); line-height:1.72; }
+  .method-desc strong { color:var(--text); }
+  .method-desc code {
+    font-family:'Space Mono',monospace; font-size:0.72rem;
+    background:rgba(26,26,46,0.07); padding:0.1rem 0.3rem; border-radius:3px;
+    color:var(--accent2);
+  }
+
+  /* ── NOTE BLOCK ── */
+  .note-block {
+    background: rgba(217,119,6,0.06);
+    border: 1.5px solid rgba(217,119,6,0.25);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-top: 1.5rem;
+    font-size: 0.8rem; color:var(--text2); line-height:1.65;
+  }
+  .note-block .note-title {
+    font-family:'Space Mono',monospace; font-size:0.62rem;
+    color:var(--yellow); text-transform:uppercase; letter-spacing:0.12em;
+    margin-bottom:0.4rem; font-weight:700;
+  }
+  .note-block strong { color:var(--text); }
+  .note-block code {
+    font-family:'Space Mono',monospace; font-size:0.72rem;
+    background:rgba(26,26,46,0.07); padding:0.1rem 0.3rem;
+    border-radius:3px; color:var(--accent2);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position:relative; z-index:1;
+    background: #1a1a2a;
+    color: rgba(255,255,255,0.6);
+    padding: 2rem;
+    text-align:center;
+    font-family:'Space Mono',monospace; font-size:0.62rem;
+    letter-spacing:0.08em;
+  }
+  footer span { color:var(--accent); }
+  footer .f-uao {
+    font-size:0.7rem; color:rgba(255,255,255,0.85);
+    font-weight:700; letter-spacing:0.12em;
+    display:block; margin-bottom:0.4rem;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width:4px; height:4px; }
+  ::-webkit-scrollbar-track { background:var(--bg2); }
+  ::-webkit-scrollbar-thumb { background:rgba(212,56,13,0.4); border-radius:2px; }
+
+  @media (max-width:700px) {
+    nav { display:none; }
+    .hero h1 { font-size:2rem; }
+    .materials-grid { grid-template-columns:1fr 1fr; }
+    .hero-univ-name { font-size:0.6rem; }
+  }
+
+  /* ── CODE BLOCK ── */
+  .code-block {
+    background: #1e1e2e;
+    border: 1.5px solid rgba(192,57,43,0.2);
+    border-radius: 10px;
+    padding: 0;
+    margin: 0.85rem 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .code-block-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.6rem 1rem;
+    background: rgba(192,57,43,0.06);
+    border-bottom: 1px solid rgba(192,57,43,0.15);
+  }
+  .code-lang {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.12em;
+  }
+  .code-copy-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem; padding: 0.2rem 0.7rem;
+    border-radius: 4px; border: 1px solid var(--border2);
+    background: transparent; color: var(--accent);
+    cursor: pointer; transition: all 0.2s;
+    letter-spacing: 0.06em;
+  }
+  .code-copy-btn:hover { background: rgba(88,166,255,0.1); }
+  .code-block pre {
+    margin: 0; padding: 1.25rem;
+    overflow-x: auto;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    line-height: 1.75;
+    color: #c9d1d9;
+    white-space: pre;
+  }
+
+  /* ── IMAGE PLACEHOLDER ── */
+  .img-placeholder {
+    width: 100%; min-height: 200px;
+    border: 2px dashed rgba(192,57,43,0.3);
+    border-radius: 10px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 0.75rem; padding: 2rem;
+    background: rgba(192,57,43,0.03);
+    color: var(--text2);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem; text-align: center;
+    line-height: 1.6;
+  }
+  .img-placeholder .ph-icon { font-size: 2.5rem; }
+
+  /* scrollbar fix dark */
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: rgba(192,57,43,0.4); border-radius:2px; }
+
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-left">
+    <div class="uao-logo"><span style="color:#c0392b;font-weight:800;">UAO</span></div>
+    <div class="header-title">
+      <span class="header-univ">Universidad Autónoma de Occidente</span>
+      <span class="header-course">Guía de Laboratorio · Motor DC N20</span>
+    </div>
+  </div>
+  <nav>
+    <a href="#materiales">Materiales</a>
+    <a href="#conexiones">Conexiones</a>
+    <a href="#identificacion">Identificación</a>
+    <a href="#controladores">Controladores</a>
+    <a href="#posicion">Posición</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-stripe"></div>
+  <div class="hero-circle1"></div>
+  <div class="hero-circle2"></div>
+  <div style="position:relative; z-index:1;">
+    <div class="hero-univ-name">Universidad Autónoma de Occidente · Cali</div>
+    <div class="badge">&#9679; Guía de Laboratorio · Control 1</div>
+    <h1>Control de <em>Velocidad</em><br>y <strong>Posición</strong><br>Motor DC N20</h1>
+    <p class="hero-sub">Guía paso a paso para implementar un sistema de control en lazo cerrado sobre el micromotorreductor N20 con encoder incremental, usando Arduino Uno y el driver L298N.</p>
+    <div class="steps-grid">
+      <a href="#materiales"    class="step-pill">01 · Materiales</a>
+      <a href="#conexiones"    class="step-pill">02 · Conexiones</a>
+      <a href="#identificacion" class="step-pill">03 · Identificación</a>
+      <a href="#datos"         class="step-pill">04 · Firmware Arduino</a>
+      <a href="#controladores" class="step-pill">05 · Controladores</a>
+      <a href="#posicion"      class="step-pill">06 · Control Posición</a>
+    </div>
+  </div>
+</section>
+
+<main>
+
+<!-- ══════════ 01 MATERIALES ══════════ -->
+<section class="section" id="materiales">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Materiales Requeridos</h2>
+  </div>
+
+  <div class="materials-grid">
+    <div class="material-card">
+      <div class="material-name">Motor DC N20 con Encoder</div>
+      <div class="material-desc">Micromotor con reductor y encoder incremental en cuadratura integrado</div>
+    </div>
+    <div class="material-card">
+      <div class="material-name">Driver Puente H L298N</div>
+      <div class="material-desc">Módulo de potencia para control de dirección y velocidad vía PWM</div>
+    </div>
+    <div class="material-card">
+      <div class="material-name">Arduino Uno</div>
+      <div class="material-desc">Microcontrolador principal — genera PWM y lee las señales del encoder</div>
+    </div>
+    <div class="material-card">
+      <div class="material-name">Protoboard</div>
+      <div class="material-desc">Para montaje y distribución ordenada de las líneas de señal y alimentación</div>
+    </div>
+    <div class="material-card">
+      <div class="material-name">Cables de Conexión</div>
+      <div class="material-desc">Jumpers macho-macho y macho-hembra para todas las interconexiones del sistema</div>
+    </div>
+    <div class="material-card">
+      <div class="material-name">Fuente DC 12V</div>
+      <div class="material-desc">Alimentación del motor vía el módulo L298N (rango de operación 6–12 V)</div>
+    </div>
+    <div class="material-card">
+      <div class="material-name">PC + Arduino IDE</div>
+      <div class="material-desc">Para cargar el firmware al Arduino y visualizar la telemetría serial</div>
+    </div>
+    <div class="material-card">
+      <div class="material-name">PC + MATLAB</div>
+      <div class="material-desc">Para identificación del sistema, diseño de controladores y simulación</div>
+    </div>
+  </div>
+
+  <div style="margin-top:2rem; display:grid; grid-template-columns:repeat(auto-fit, minmax(270px,1fr)); gap:1rem;">
+    <div class="card">
+      <div class="card-title">Motor DC N20 con Encoder</div>
+      <table class="spec-table">
+        <tr><th>Parámetro</th><th>Valor</th></tr>
+        <tr><td>Voltaje de operación</td><td>6 – 12 V</td></tr>
+        <tr><td>Corriente sin carga</td><td>100 – 300 mA</td></tr>
+        <tr><td>Corriente de arranque</td><td>Hasta 1 A</td></tr>
+        <tr><td>Tipo de encoder</td><td>Incremental en cuadratura</td></tr>
+        <tr><td>Voltaje encoder</td><td>3.3 – 5 V</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">Driver L298N</div>
+      <table class="spec-table">
+        <tr><th>Parámetro</th><th>Valor</th></tr>
+        <tr><td>Voltaje motor</td><td>5 – 35 V</td></tr>
+        <tr><td>Corriente máxima</td><td>2 A por canal</td></tr>
+        <tr><td>Voltaje lógico</td><td>5 V</td></tr>
+        <tr><td>Tipo de control</td><td>PWM + digital</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">Arduino Uno</div>
+      <table class="spec-table">
+        <tr><th>Parámetro</th><th>Valor</th></tr>
+        <tr><td>Voltaje de operación</td><td>5 V</td></tr>
+        <tr><td>Voltaje de entrada</td><td>7 – 12 V</td></tr>
+        <tr><td>Pines digitales</td><td>14 (6 con PWM)</td></tr>
+        <tr><td>Frecuencia de reloj</td><td>16 MHz</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 02 CONEXIONES ══════════ -->
+<section class="section" id="conexiones">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Conexiones del Sistema</h2>
+  </div>
+
+  <p style="color:var(--text2); font-size:0.88rem; line-height:1.7; margin-bottom:1.25rem;">
+    Las conexiones se realizan en tres etapas: primero el motor al driver, luego el driver al Arduino, y finalmente el encoder al Arduino. Es fundamental establecer una <strong style="color:var(--text)">tierra común (GND)</strong> entre todos los módulos antes de energizar el sistema.
+  </p>
+
+  <div class="step-flow" style="margin-top:1.5rem;">
+    <div class="flow-step">
+      <div class="flow-num">1</div>
+      <div class="flow-content">
+        <div class="flow-title">Motor DC → Driver L298N</div>
+        <div class="flow-desc">
+          Conectar los dos cables de alimentación del motor (M1 y M2) a los terminales <code>OUT1</code> y <code>OUT2</code> del módulo L298N. Estos son los terminales de salida del canal A del driver. La inversión de polaridad entre OUT1 y OUT2 determina el sentido de giro del motor.
+        </div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">2</div>
+      <div class="flow-content">
+        <div class="flow-title">Driver L298N → Arduino Uno</div>
+        <div class="flow-desc">
+          Conectar el pin <code>IN1</code> del L298N al pin <code>D9</code> del Arduino (salida PWM) y el pin <code>IN2</code> al pin <code>D10</code>. Estos pines controlan la dirección y la velocidad del motor. El pin ENA del L298N puede dejarse en HIGH (habilitado permanentemente) o conectarse a un pin PWM adicional si se requiere control independiente de velocidad.
+        </div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">3</div>
+      <div class="flow-content">
+        <div class="flow-title">Encoder → Arduino Uno</div>
+        <div class="flow-desc">
+          Conectar la <strong style="color:var(--text)">Salida C1 del encoder</strong> al pin <code>D2</code> del Arduino y la <strong style="color:var(--text)">Salida C2</strong> al pin <code>D3</code>. Estos son los únicos pines del Arduino Uno que soportan <strong style="color:var(--text)">interrupciones externas</strong> (INT0 e INT1), indispensables para contar los pulsos sin perder ningún flanco. La alimentación VCC del encoder va a <code>5V</code> del Arduino y el GND al nodo común.
+        </div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">4</div>
+      <div class="flow-content">
+        <div class="flow-title">Fuente de alimentación y tierra común</div>
+        <div class="flow-desc">
+          Conectar la fuente de 12V al terminal <code>VCC Driver (12V)</code> del módulo L298N. La línea de <code>VCC Motor (5V)</code> alimenta los circuitos de señal del encoder. El <strong style="color:var(--text)">GND Común</strong> en la protoboard debe unir el GND del L298N, el GND del Arduino y el GND de la fuente en un mismo nodo. Sin tierra común, las señales de control no tienen referencia válida.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn-box info-box">
+    <div class="info-icon">⚠</div>
+    <div class="info-text">
+      <strong>Antes de energizar:</strong> Verificar que no haya cortocircuitos, que los pines D2 y D3 estén correctamente conectados al encoder, y que la fuente esté desconectada mientras se realizan las conexiones. El módulo L298N puede dañarse irreversiblemente con una conexión invertida de alimentación.
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 03 IDENTIFICACIÓN ══════════ -->
+<section class="section" id="identificacion">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Identificación del Sistema</h2>
+  </div>
+
+  <p style="color:var(--text2); font-size:0.88rem; line-height:1.7; margin-bottom:1.25rem;">
+    La identificación consiste en obtener experimentalmente el <strong style="color:var(--text)">modelo matemático</strong> que describe el comportamiento dinámico del motor. Este modelo, expresado como función de transferencia, es la base para diseñar cualquier controlador. El motor DC con encoder se modela como un <strong style="color:var(--text)">sistema de primer orden</strong>:
+  </p>
+
+  <div class="formula-box">
+    <span class="formula-label">Modelo de primer orden — dominio continuo</span>
+    <span class="hl">G(s) = K / (τ·s + 1)</span><br><br>
+    Donde:<br>
+    · <span class="hl2">K</span> = Ganancia estacionaria (razón entre velocidad en estado estable y voltaje aplicado)<br>
+    · <span class="hl2">τ</span> = Constante de tiempo (tiempo en alcanzar el 63.2% del valor final)
+  </div>
+
+  <div class="info-box">
+    <div class="info-icon">ℹ</div>
+    <div class="info-text">
+      <strong>¿Por qué primer orden?</strong> La dinámica eléctrica del motor es mucho más rápida que la mecánica, por lo que se puede despreciar. El sistema se comporta como primer orden: la velocidad responde exponencialmente al voltaje aplicado.
+    </div>
+  </div>
+
+  <div class="step-flow" style="margin-top:1.5rem;">
+    <div class="flow-step">
+      <div class="flow-num">1</div>
+      <div class="flow-content">
+        <div class="flow-title">Cargar el firmware de adquisición en el Arduino</div>
+        <div class="flow-desc">El Arduino debe tener cargado el código descrito en la sección 04. Este programa leerá los pulsos del encoder mediante interrupciones, calculará la velocidad angular y la enviará por el puerto serial cada 10 ms.</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">2</div>
+      <div class="flow-content">
+        <div class="flow-title">Aplicar un escalón de voltaje al motor</div>
+        <div class="flow-desc">Con el sistema en reposo, aplicar súbitamente un voltaje constante al motor (por ejemplo 2 V mediante PWM) y mantenerlo fijo durante al menos 2 segundos. Esto genera una <strong style="color:var(--text)">respuesta al escalón</strong> que muestra cómo el motor acelera desde cero hasta su velocidad de estado estacionario.</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">3</div>
+      <div class="flow-content">
+        <div class="flow-title">Capturar y guardar los datos en CSV</div>
+        <div class="flow-desc">Registrar en tiempo real los pares (tiempo, velocidad) durante la prueba. Pueden guardarse leyendo el puerto serial desde MATLAB con <code>serialport()</code> y <code>readline()</code>, o con el Serial Monitor del Arduino IDE. Guardar con columnas <code>Tiempo_s</code> y <code>Velocidad</code>.</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">4</div>
+      <div class="flow-content">
+        <div class="flow-title">Ajustar el modelo a los datos experimentales</div>
+        <div class="flow-desc">Con los datos guardados, usarlos en MATLAB para ajustar el modelo a la curva experimental. Esto puede hacerse con la función <code>fminsearch</code>, <code>lsqcurvefit</code> o con la aplicación <strong style="color:var(--text)">System Identification Toolbox</strong>. El ajuste entregará los valores de K y τ.</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">5</div>
+      <div class="flow-content">
+        <div class="flow-title">Validar el modelo obtenido</div>
+        <div class="flow-desc">Comparar visualmente la curva del modelo identificado con los datos experimentales. Si el ajuste es bueno, el modelo puede usarse con confianza para el diseño de controladores. Si es pobre, repetir la prueba ajustando el voltaje del escalón o el tiempo de muestreo.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box info-box">
+    <div class="info-icon">✓</div>
+    <div class="info-text">
+      <strong>Consejo:</strong> Repetir la prueba de escalón al menos 3 veces y promediar los valores de K y τ para reducir el efecto del ruido. Verificar con distintos voltajes de escalón que el modelo se mantenga aproximadamente constante, confirmando linealidad del sistema.
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 04 FIRMWARE ARDUINO ══════════ -->
+<section class="section" id="datos">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">Firmware Arduino — Adquisición de Datos</h2>
+  </div>
+
+  <p style="color:var(--text2); font-size:0.88rem; line-height:1.7; margin-bottom:1.25rem;">
+    El Arduino debe ejecutar un programa que cumpla tres funciones simultáneamente: <strong style="color:var(--text)">(1)</strong> leer los pulsos del encoder mediante interrupciones, <strong style="color:var(--text)">(2)</strong> calcular la velocidad angular a partir del conteo de pulsos, y <strong style="color:var(--text)">(3)</strong> ejecutar la ley de control y enviar la señal PWM al driver. Todo esto debe ocurrir de forma determinista cada <strong style="color:var(--text)">Ts = 10 ms</strong>.
+  </p>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('ard-enc', this)">Encoder e interrupciones</button>
+    <button class="tab-btn" onclick="showTab('ard-loop', this)">Lazo de control</button>
+    <button class="tab-btn" onclick="showTab('ard-serial', this)">Comunicación serial</button>
+    <button class="tab-btn" onclick="showTab('ard-python', this)">Script de identificación</button>
+  </div>
+
+  <div id="ard-enc" class="tab-pane active">
+    <div class="card">
+      <div class="card-title">Lectura del encoder en cuadratura</div>
+      <p style="font-size:0.82rem; color:var(--text2); line-height:1.7; margin-bottom:1rem;">
+        El encoder N20 genera dos señales cuadradas (canal A y canal B) desfasadas 90°. Para contar los pulsos sin perder ninguno, se usan <strong style="color:var(--text)">interrupciones externas</strong> en los pines D2 (INT0) y D3 (INT1). La rutina de interrupción (ISR) se ejecuta en cada flanco y determina el sentido de giro comparando el estado de ambos canales.
+      </p>
+      <div class="formula-box">
+        <span class="formula-label">Cálculo de velocidad desde pulsos</span>
+        Δticks = ticks_actual − ticks_anterior &nbsp;(calculado cada Ts)<br>
+        ω [rad/s] = <span class="hl">(Δticks / CPR) × 2π / Ts</span><br><br>
+        Donde <span class="hl2">CPR</span> = pulsos por revolución completa (consultar datasheet del motor N20).
+      </div>
+      <div class="warn-box info-box" style="margin-top:0.75rem;">
+        <div class="info-icon">⚠</div>
+        <div class="info-text">
+          La variable <code>encoderTicks</code> debe declararse <code>volatile</code> porque es modificada dentro de la ISR y leída en el loop principal. Sin <code>volatile</code> el compilador puede optimizarla incorrectamente y el conteo será erróneo.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="ard-loop" class="tab-pane">
+    <div class="card">
+      <div class="card-title">Lazo de control determinista (Ts = 10 ms)</div>
+      <p style="font-size:0.82rem; color:var(--text2); line-height:1.7; margin-bottom:1rem;">
+        El loop principal verifica al inicio de cada iteración si han pasado 10 ms desde la última ejecución usando <code>micros()</code>. Si no han pasado, retorna sin hacer nada. Una vez transcurridos los 10 ms, lee el encoder, calcula el error y aplica la ley de control.
+      </p>
+      <div class="formula-box">
+        <span class="formula-label">Estructura de la ecuación de diferencias</span>
+        <span class="hl">u[k] = u[k−1] + b₀ · e[k] + b₁ · e[k−1]</span><br><br>
+        Donde:<br>
+        · <span class="hl2">e[k]</span> = setpoint − velocidad_medida (error actual)<br>
+        · <span class="hl2">b₀, b₁</span> = coeficientes del controlador discreto (calculados en MATLAB)<br>
+        · <span class="hl2">u[k]</span> = señal de control, saturada entre 0 y 5 V antes de convertir a PWM
+      </div>
+      <p style="font-size:0.82rem; color:var(--text2); line-height:1.7; margin-top:0.75rem;">
+        La señal <code>u[k]</code> se convierte a PWM con <code>pwm = (u_k / 5.0) × 255</code> y se escribe en el pin D9 usando <code>analogWrite()</code>.
+      </p>
+    </div>
+  </div>
+
+  <div id="ard-serial" class="tab-pane">
+    <div class="card">
+      <div class="card-title">Envío de telemetría por puerto serial</div>
+      <p style="font-size:0.82rem; color:var(--text2); line-height:1.7; margin-bottom:1rem;">
+        Para identificar el sistema y monitorear el control, el Arduino envía datos por serial en cada ciclo de muestreo. Se recomienda un formato simple separado por comas o en JSON, legible desde MATLAB con <code>readline()</code>.
+      </p>
+      <div class="formula-box">
+        <span class="formula-label">Formato sugerido para la telemetría</span>
+        Formato texto: &nbsp;<span class="hl">t_ms, setpoint, velocidad, u_control, posicion</span><br>
+        Formato JSON: &nbsp;<span class="hl2">{"t":1230,"sp":2.0,"v":1.85,"u":1.2,"pos":45.0}</span><br><br>
+        · Velocidad de comunicación: <span class="hlg">115200 baud</span><br>
+        · El Arduino envía un dato cada 10 ms (cada ciclo Ts)<br>
+        · MATLAB lee el puerto con <code>serialport()</code> y <code>readline()</code>
+      </div>
+    </div>
+  </div>
+
+  <div id="ard-python" class="tab-pane">
+    <div class="card">
+      <div class="card-title">Script Python — Identificación automática (PC)</div>
+      <p style="font-size:0.82rem; color:var(--text2); line-height:1.7; margin-bottom:1rem;">
+        Este script unificado (<code>identificar_planta.py</code>) corre en el PC y se encarga de todo el proceso de identificación de manera automática. Tiene dos modos de operación:
+      </p>
+      <div class="step-flow" style="margin-bottom:1rem;">
+        <div class="flow-step">
+          <div class="flow-num">A</div>
+          <div class="flow-content">
+            <div class="flow-title">Modo Serial (hardware conectado)</div>
+            <div class="flow-desc">Detecta puertos COM disponibles, se conecta al Arduino, inyecta el escalón de <code>2V</code> durante 2 segundos, captura la telemetría y la guarda en <code>datos_identificacion.csv</code>.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">B</div>
+          <div class="flow-content">
+            <div class="flow-title">Modo Offline (sin hardware)</div>
+            <div class="flow-desc">Si ya existe <code>datos_identificacion.csv</code>, permite realizar el ajuste matemático sin conectar el Arduino. Calcula K y τ, genera la gráfica <code>fit_identificacion.png</code>, el archivo <code>funcion_transferencia.txt</code> y los scripts de MATLAB.</div>
+          </div>
+        </div>
+      </div>
+      <div class="warn-box info-box" style="margin-bottom:1rem;">
+        <div class="info-icon">⚠</div>
+        <div class="info-text">
+          <strong>Dependencias requeridas:</strong> <code>pip install pyserial numpy scipy matplotlib</code>. El script detecta automáticamente qué librerías están disponibles y adapta su comportamiento.
+        </div>
+      </div>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-lang">Python 3 · identificar_planta.py</span>
+          <button class="code-copy-btn" onclick="copyCode(this)">Copiar</button>
+        </div>
+        <pre id="py-code-block">#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+&quot;&quot;&quot;
+=============================================================================
+PASO 1: SCRIPT UNIFICADO DE IDENTIFICACIÓN DE PLANTAS (SERIAL &amp; OFFLINE)
+Proyecto Final de Control - Simón, Maria Paula y Valeria
+
+Este script posee dos modos de operación en un solo archivo:
+  1. Modo Offline: Si existe &#x27;datos_identificacion.csv&#x27;, permite realizar el
+     ajuste matemático sin conectar el hardware.
+  2. Modo Serial: Se conecta al Arduino Uno, inyecta un escalón de voltaje,
+     captura la telemetría, guarda el CSV y calcula el modelo.
+
+Al finalizar, guarda la gráfica &#x27;fit_identificacion.png&#x27; y escribe los
+resultados matemáticos detallados en &#x27;funcion_transferencia.txt&#x27;.
+=============================================================================
+&quot;&quot;&quot;
+
+import os
+import sys
+import time
+import json
+import csv
+import math
+import numpy as np
+
+# Intentar importar librerías opcionales para graficación y ajuste óptimo
+try:
+    import serial
+    import serial.tools.list_ports
+    HAS_SERIAL = True
+except ImportError:
+    HAS_SERIAL = False
+
+try:
+    import matplotlib
+    matplotlib.use(&#x27;Agg&#x27;) # Evitar bloqueo de GUI en segundo plano
+    import matplotlib.pyplot as plt
+    from scipy.optimize import curve_fit
+    HAS_MATH_LIBS = True
+except ImportError:
+    HAS_MATH_LIBS = False
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CONFIGURACIÓN PARÁMETROS
+# ─────────────────────────────────────────────────────────────────────────────
+BAUD_RATE = 115200
+SAMPLE_TIME = 0.010    # Ts = 10 ms
+DURATION = 2.0         # Duración de la prueba: 2 segundos
+STEP_VOLTAGE = 2.0     # Voltaje del escalón a aplicar (V)
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+CSV_FILE = os.path.join(SCRIPT_DIR, &quot;datos_identificacion.csv&quot;)
+PLOT_FILE = os.path.join(SCRIPT_DIR, &quot;fit_identificacion.png&quot;)
+TXT_FILE = os.path.join(SCRIPT_DIR, &quot;funcion_transferencia.txt&quot;)
+
+def scan_serial_ports():
+    if not HAS_SERIAL:
+        return []
+    ports = list(serial.tools.list_ports.comports())
+    return [p.device for p in ports]
+
+# Modelo analítico de respuesta al escalón de primer orden: y(t) = K * V * (1 - e^(-t/tau))
+def first_order_step(t, K, tau):
+    return K * STEP_VOLTAGE * (1.0 - np.exp(-t / tau))
+
+def run_identification(port_name):
+    if not HAS_SERIAL:
+        print(&quot;\n[ERROR] La libreria &#x27;pyserial&#x27; no esta instalada. Ejecuta: pip install pyserial&quot;)
+        return None, None
+
+    print(f&quot;\n Conectando al puerto {port_name} a {BAUD_RATE} baudios...&quot;)
+    try:
+        ser = serial.Serial(port_name, BAUD_RATE, timeout=1.0)
+        time.sleep(2.0) # Esperar reseteo fisico DTR
+        ser.reset_input_buffer()
+        print(&quot; Conexion establecida con exito.&quot;)
+    except Exception as e:
+        print(f&quot; Error al abrir el puerto: {e}&quot;)
+        return None, None
+
+    t_data = []
+    y_data = []
+    
+    print(f&quot;\n▶ Iniciando prueba. Inyectando escalon de {STEP_VOLTAGE}V por {DURATION} segundos...&quot;)
+    
+    # 1. Asegurar modo velocidad en lazo abierto
+    ser.write(b&#x27;{&quot;cmd&quot;:&quot;ACTIVATE&quot;,&quot;state&quot;:0}\n&#x27;)
+    time.sleep(0.05)
+    ser.write(b&#x27;{&quot;cmd&quot;:&quot;SET_MODE&quot;,&quot;mode&quot;:&quot;VEL&quot;}\n&#x27;)
+    time.sleep(0.05)
+    ser.write(b&#x27;{&quot;cmd&quot;:&quot;SET_SP&quot;,&quot;value&quot;:0.0}\n&#x27;)
+    time.sleep(0.05)
+    ser.write(b&#x27;{&quot;cmd&quot;:&quot;ACTIVATE&quot;,&quot;state&quot;:1}\n&#x27;)
+    time.sleep(0.05)
+    
+    # Aplicar el escalón
+    cmd = f&#x27;{{&quot;cmd&quot;:&quot;SET_SP&quot;,&quot;value&quot;:{STEP_VOLTAGE}}}\n&#x27;.encode()
+    ser.write(cmd)
+    
+    start_time = time.time()
+    
+    try:
+        while time.time() - start_time &lt; DURATION:
+            if ser.in_waiting &gt; 0:
+                line = ser.readline().decode(&#x27;utf-8&#x27;, errors=&#x27;ignore&#x27;).strip()
+                if line.startswith(&#x27;{&#x27;):
+                    try:
+                        d = json.loads(line)
+                        t_sec = d.get(&#x27;t&#x27;, 0) / 1000.0
+                        y_val = d.get(&#x27;y&#x27;, 0.0)
+                        
+                        t_data.append(t_sec)
+                        y_data.append(y_val)
+                        print(f&quot;t = {t_sec:.2f} s | Velocidad = {y_val:.3f} V&quot;)
+                    except Exception:
+                        pass
+    except KeyboardInterrupt:
+        print(&quot;\n Prueba interrumpida por el usuario.&quot;)
+    
+    # Apagar motor al finalizar
+    print(&quot;\n Finalizando prueba. Apagando motor...&quot;)
+    ser.write(b&#x27;{&quot;cmd&quot;:&quot;SET_SP&quot;,&quot;value&quot;:0.0}\n&#x27;)
+    time.sleep(0.05)
+    ser.write(b&#x27;{&quot;cmd&quot;:&quot;ACTIVATE&quot;,&quot;state&quot;:0}\n&#x27;)
+    ser.close()
+    
+    if len(t_data) &lt; 10:
+        print(&quot; Error: No se recibieron suficientes datos de telemetria.&quot;)
+        return None, None
+        
+    t_arr = np.array(t_data) - t_data[0]
+    y_arr = np.array(y_data)
+    
+    with open(CSV_FILE, &#x27;w&#x27;, newline=&#x27;&#x27;) as f:
+        writer = csv.writer(f)
+        writer.writerow([&quot;Tiempo_s&quot;, &quot;Velocidad_V&quot;])
+        for idx in range(len(t_arr)):
+            writer.writerow([t_arr[idx], y_arr[idx]])
+    print(f&quot; Datos experimentales guardados en: &#x27;{CSV_FILE}&#x27;&quot;)
+
+    return t_arr, y_arr
+
+def perform_fit(t_arr, y_arr):
+    if not HAS_MATH_LIBS:
+        print(&quot;\n[ADVERTENCIA] &#x27;numpy&#x27;, &#x27;scipy&#x27; o &#x27;matplotlib&#x27; no estan instalados.&quot;)
+        return
+
+    print(&quot;\n[INFO] Calculando ajuste optimo por minimos cuadrados no lineales...&quot;)
+    try:
+        y_final = y_arr[-1]
+        K_est = y_final / STEP_VOLTAGE
+        
+        # Ajustar bounds de K dependiendo de su signo por polaridad del motor
+        if K_est &lt; 0:
+            bounds = ([-10.0, 0.01], [0.0, 2.0])
+            p0 = [K_est, 0.2]
+        else:
+            bounds = ([0.0, 0.01], [10.0, 2.0])
+            p0 = [K_est, 0.2]
+
+        popt, pcov = curve_fit(first_order_step, t_arr, y_arr, p0=p0, bounds=bounds)
+        K_id, tau_id = popt[0], popt[1]
+
+        # Calcular coeficientes discretos correspondientes a Ts = 10 ms para visualización
+        a1_disc = math.exp(-SAMPLE_TIME / tau_id)
+        b0_disc = K_id * (1.0 - a1_disc)
+
+        # Imprimir en consola de forma limpia y ASCII
+        print(&quot;\n&quot; + &quot;=&quot;*57)
+        print(&quot;      RESULTADO DE LA IDENTIFICACION EXPERIMENTAL&quot;)
+        print(&quot;=&quot;*57)
+        print(f&quot; Ganancia Estacionaria (K):  {K_id:.5f} V/V&quot;)
+        print(f&quot; Constante de Tiempo (tau):  {tau_id:.5f} s&quot;)
+        print(f&quot; Voltaje del Escalon (V):    {STEP_VOLTAGE:.1f} V&quot;)
+        print(&quot;---------------------------------------------------------&quot;)
+        print(f&quot; Funcion de Transferencia Continua Identificada:&quot;)
+        print(f&quot;                {K_id:.4f}&quot;)
+        print(f&quot;     G_v(s) = -------------&quot;)
+        print(f&quot;               {tau_id:.4f}s + 1&quot;)
+        print(&quot;=========================================================\n&quot;)
+
+        # Escribir archivo funcion_transferencia.txt de forma legible y hermosa
+        with open(TXT_FILE, &#x27;w&#x27;) as f:
+            f.write(&quot;=========================================================\n&quot;)
+            f.write(&quot;      RESULTADOS MATEMATICOS DE LA PLANTA IDENTIFICADA   \n&quot;)
+            f.write(&quot;=========================================================\n\n&quot;)
+            f.write(f&quot;PARAMETROS CONTINUOS:\n&quot;)
+            f.write(f&quot;  Ganancia estatica (K)    = {K_id:.6f} V/V\n&quot;)
+            f.write(f&quot;  Constante de tiempo (t)  = {tau_id:.6f} s\n\n&quot;)
+            f.write(f&quot;FUNCION DE TRANSFERENCIA EN EL DOMINIO CONTINUO S:\n&quot;)
+            f.write(f&quot;                  {K_id:.4f}\n&quot;)
+            f.write(f&quot;      G_v(s) = -----------------\n&quot;)
+            f.write(f&quot;                {tau_id:.4f} * s + 1\n\n&quot;)
+            f.write(f&quot;PARAMETROS DISCRETOS ZOH (Ts = {SAMPLE_TIME:.3f} s):\n&quot;)
+            f.write(f&quot;  b0_planta = {b0_disc:.6f}\n&quot;)
+            f.write(f&quot;  a1_planta = {a1_disc:.6f}\n\n&quot;)
+            f.write(f&quot;FUNCION DE TRANSFERENCIA DISCRETIZADA EN EL PLANO Z:\n&quot;)
+            f.write(f&quot;                  {b0_disc:.6f}\n&quot;)
+            f.write(f&quot;      G_v(z) = -----------------\n&quot;)
+            f.write(f&quot;                z - {a1_disc:.6f}\n\n&quot;)
+            f.write(f&quot;PREFILTRO DIGITAL COMPENSADOR RECOMENDADO F(z):\n&quot;)
+            f.write(f&quot;                  {1.0 - a1_disc:.6f}\n&quot;)
+            f.write(f&quot;      F(z)   = -----------------\n&quot;)
+            f.write(f&quot;                z - {a1_disc:.6f}\n\n&quot;)
+            f.write(&quot;=========================================================\n&quot;)
+            f.write(&quot;Instrucciones de diseno: Introduce K y tau en el script del\n&quot;)
+            f.write(&quot;Paso 2 para calcular todas tus ganancias de velocidad.\n&quot;)
+            f.write(&quot;=========================================================\n&quot;)
+
+        print(f&quot;[OK] Archivo descriptivo guardado en: &#x27;{TXT_FILE}&#x27;&quot;)
+
+        # Escribir el script plot_fit.m para MATLAB
+        m_file = os.path.join(SCRIPT_DIR, &quot;plot_fit.m&quot;)
+        with open(m_file, &#x27;w&#x27;) as f:
+            f.write(&quot;K = &quot; + f&quot;{K_id:.6f}&quot; + &quot;;\n&quot;)
+            f.write(&quot;tau = &quot; + f&quot;{tau_id:.6f}&quot; + &quot;;\n&quot;)
+            f.write(&quot;Ts = &quot; + f&quot;{SAMPLE_TIME:.3f}&quot; + &quot;;\n&quot;)
+            f.write(&quot;V_step = &quot; + f&quot;{STEP_VOLTAGE:.1f}&quot; + &quot;;\n\n&quot;)
+            f.write(&quot;data = readmatrix(&#x27;datos_identificacion.csv&#x27;);\n&quot;)
+            f.write(&quot;t_exp = data(:, 1);\n&quot;)
+            f.write(&quot;y_exp = data(:, 2);\n\n&quot;)
+            f.write(&quot;G = tf(K, [tau 1]);\n&quot;)
+            f.write(&quot;t_sim = (0:length(t_exp)-1)&#x27; * Ts;\n&quot;)
+            f.write(&quot;y_model = step(G * V_step, t_sim);\n\n&quot;)
+            f.write(&quot;figure(&#x27;Name&#x27;, &#x27;Identificacion N20&#x27;, &#x27;Color&#x27;, &#x27;white&#x27;);\n&quot;)
+            f.write(&quot;plot(t_exp, y_exp, &#x27;o-&#x27;, &#x27;Color&#x27;, [0.66, 0.33, 0.97], &#x27;LineWidth&#x27;, 1, &#x27;DisplayName&#x27;, &#x27;Datos Experimentales&#x27;);\n&quot;)
+            f.write(&quot;hold on;\n&quot;)
+            f.write(&quot;plot(t_sim, y_model, &#x27;--&#x27;, &#x27;Color&#x27;, [0.0, 0.86, 1.0], &#x27;LineWidth&#x27;, 2.5, &#x27;DisplayName&#x27;, &#x27;Modelo Identificado&#x27;);\n&quot;)
+            f.write(&quot;grid on;\n&quot;)
+            f.write(&quot;xlabel(&#x27;Tiempo (s)&#x27;, &#x27;FontSize&#x27;, 11, &#x27;FontWeight&#x27;, &#x27;bold&#x27;);\n&quot;)
+            f.write(&quot;ylabel(&#x27;Velocidad (V)&#x27;, &#x27;FontSize&#x27;, 11, &#x27;FontWeight&#x27;, &#x27;bold&#x27;);\n&quot;)
+            f.write(&quot;title(&#x27;Identificacion de Velocidad N20 (MATLAB)&#x27;, &#x27;FontSize&#x27;, 12, &#x27;FontWeight&#x27;, &#x27;bold&#x27;);\n&quot;)
+            f.write(&quot;legend(&#x27;show&#x27;, &#x27;Location&#x27;, &#x27;Best&#x27;);\n&quot;)
+        print(f&quot;[OK] Script de MATLAB guardado en: &#x27;{m_file}&#x27;&quot;)
+
+        # Escribir el script simulacion_planta.m para MATLAB y Simulink
+        sim_file = os.path.join(SCRIPT_DIR, &quot;simulacion_planta.m&quot;)
+        with open(sim_file, &#x27;w&#x27;) as f:
+            f.write(f&quot;K = {K_id:.6f};\n&quot;)
+            f.write(f&quot;tau = {tau_id:.6f};\n&quot;)
+            f.write(f&quot;Ts = {SAMPLE_TIME:.3f};\n&quot;)
+            f.write(f&quot;V_step = {STEP_VOLTAGE:.1f};\n\n&quot;)
+            f.write(&quot;t = 0:0.01:3.0;\n&quot;)
+            f.write(&quot;G_s = tf(K, [tau 1]);\n&quot;)
+            f.write(&quot;y_s = step(G_s * V_step, t);\n\n&quot;)
+            f.write(f&quot;G_z = tf({b0_disc:.6f}, [1 {-a1_disc:.6f}], Ts);\n&quot;)
+            f.write(&quot;y_z = step(G_z * V_step, t);\n\n&quot;)
+            f.write(&quot;figure(&#x27;Name&#x27;, &#x27;Simulacion de Planta N20&#x27;, &#x27;Color&#x27;, &#x27;white&#x27;);\n&quot;)
+            f.write(&quot;plot(t, V_step * ones(size(t)), &#x27;r--&#x27;, &#x27;LineWidth&#x27;, 2);\n&quot;)
+            f.write(&quot;hold on;\n&quot;)
+            f.write(&quot;plot(t, y_s, &#x27;b-&#x27;, &#x27;LineWidth&#x27;, 2);\n&quot;)
+            f.write(&quot;stairs(t, y_z, &#x27;g-.&#x27;, &#x27;LineWidth&#x27;, 1.5);\n&quot;)
+            f.write(&quot;grid on;\n&quot;)
+            f.write(&quot;xlabel(&#x27;Tiempo (s)&#x27;);\n&quot;)
+            f.write(&quot;ylabel(&#x27;Velocidad (V)&#x27;);\n&quot;)
+            f.write(&quot;title(&#x27;Simulacion Planta N20: Continuo vs Discreto vs Referencia&#x27;);\n&quot;)
+            f.write(&quot;legend(&#x27;Referencia (Escalon)&#x27;, &#x27;Respuesta Continua&#x27;, &#x27;Respuesta Discreta&#x27;, &#x27;Location&#x27;, &#x27;best&#x27;);\n\n&quot;)
+            f.write(&quot;model_name = &#x27;simulink_planta&#x27;;\n&quot;)
+            f.write(&quot;if ~bdIsLoaded(model_name)\n&quot;)
+            f.write(&quot;    new_system(model_name);\n&quot;)
+            f.write(&quot;end\n&quot;)
+            f.write(&quot;open_system(model_name);\n&quot;)
+            f.write(&quot;blocks = find_system(model_name, &#x27;SearchDepth&#x27;, 1);\n&quot;)
+            f.write(&quot;for i = 2:length(blocks)\n&quot;)
+            f.write(&quot;    delete_block(blocks{i});\n&quot;)
+            f.write(&quot;end\n&quot;)
+            f.write(&quot;add_block(&#x27;simulink/Sources/Step&#x27;, [model_name &#x27;/Referencia&#x27;]);\n&quot;)
+            f.write(&quot;add_block(&#x27;simulink/Continuous/Transfer Fcn&#x27;, [model_name &#x27;/Planta Continua&#x27;]);\n&quot;)
+            f.write(&quot;add_block(&#x27;simulink/Discrete/Discrete Transfer Fcn&#x27;, [model_name &#x27;/Planta Discreta&#x27;]);\n&quot;)
+            f.write(&quot;add_block(&#x27;simulink/Signal Routing/Mux&#x27;, [model_name &#x27;/Mezclador&#x27;]);\n&quot;)
+            f.write(&quot;add_block(&#x27;simulink/Sinks/Scope&#x27;, [model_name &#x27;/Osciloscopio&#x27;]);\n&quot;)
+            f.write(&quot;set_param([model_name &#x27;/Referencia&#x27;], &#x27;Position&#x27;, &#x27;[50, 100, 80, 130]&#x27;);\n&quot;)
+            f.write(&quot;set_param([model_name &#x27;/Planta Continua&#x27;], &#x27;Position&#x27;, &#x27;[160, 45, 260, 85]&#x27;);\n&quot;)
+            f.write(&quot;set_param([model_name &#x27;/Planta Discreta&#x27;], &#x27;Position&#x27;, &#x27;[160, 145, 280, 185]&#x27;);\n&quot;)
+            f.write(&quot;set_param([model_name &#x27;/Mezclador&#x27;], &#x27;Position&#x27;, &#x27;[340, 75, 345, 155]&#x27;);\n&quot;)
+            f.write(&quot;set_param([model_name &#x27;/Osciloscopio&#x27;], &#x27;Position&#x27;, &#x27;[400, 100, 430, 130]&#x27;);\n&quot;)
+            f.write(&quot;set_param([model_name &#x27;/Referencia&#x27;], &#x27;Time&#x27;, &#x27;0.0&#x27;, &#x27;Before&#x27;, &#x27;0&#x27;, &#x27;After&#x27;, num2str(V_step));\n&quot;)
+            f.write(&quot;set_param([model_name &#x27;/Planta Continua&#x27;], &#x27;Numerator&#x27;, num2str(K), &#x27;Denominator&#x27;, [&#x27;[&#x27; num2str(tau) &#x27; 1]&#x27;]);\n&quot;)
+            f.write(f&quot;set_param([model_name &#x27;/Planta Discreta&#x27;], &#x27;Numerator&#x27;, &#x27;{b0_disc:.6f}&#x27;, &#x27;Denominator&#x27;, &#x27;[1 {-a1_disc:.6f}]&#x27;, &#x27;SampleTime&#x27;, num2str(Ts));\n&quot;)
+            f.write(&quot;set_param([model_name &#x27;/Mezclador&#x27;], &#x27;Inputs&#x27;, &#x27;3&#x27;);\n&quot;)
+            f.write(&quot;set_param([model_name &#x27;/Osciloscopio&#x27;], &#x27;NumInputPorts&#x27;, &#x27;1&#x27;);\n&quot;)
+            f.write(&quot;add_line(model_name, &#x27;Referencia/1&#x27;, &#x27;Planta Continua/1&#x27;);\n&quot;)
+            f.write(&quot;add_line(model_name, &#x27;Referencia/1&#x27;, &#x27;Planta Discreta/1&#x27;);\n&quot;)
+            f.write(&quot;add_line(model_name, &#x27;Referencia/1&#x27;, &#x27;Mezclador/1&#x27;);\n&quot;)
+            f.write(&quot;add_line(model_name, &#x27;Planta Continua/1&#x27;, &#x27;Mezclador/2&#x27;);\n&quot;)
+            f.write(&quot;add_line(model_name, &#x27;Planta Discreta/1&#x27;, &#x27;Mezclador/3&#x27;);\n&quot;)
+            f.write(&quot;add_line(model_name, &#x27;Mezclador/1&#x27;, &#x27;Osciloscopio/1&#x27;);\n&quot;)
+            f.write(&quot;save_system(model_name);\n&quot;)
+        print(f&quot;[OK] Script de Simulink y simulacion guardado en: &#x27;{sim_file}&#x27;&quot;)
+
+        # Graficar ajuste y guardar
+        plt.figure(figsize=(10, 5))
+        plt.plot(t_arr, y_arr, &#x27;o-&#x27;, color=&#x27;#a855f7&#x27;, alpha=0.6, label=&#x27;Datos Experimentales Reales (N20)&#x27;)
+        plt.plot(t_arr, first_order_step(t_arr, K_id, tau_id), &#x27;--&#x27;, color=&#x27;#00dcff&#x27;, linewidth=2.5, label=&#x27;Ajuste por Minimos Cuadrados No Lineales&#x27;)
+        plt.title(&#x27;Identificacion Experimental de Velocidad - N20&#x27;, fontsize=12, fontweight=&#x27;bold&#x27;)
+        plt.xlabel(&#x27;Tiempo (segundos)&#x27;, fontsize=10)
+        plt.ylabel(&#x27;Velocidad Equivalente (Voltios)&#x27;, fontsize=10)
+        plt.grid(True, linestyle=&#x27;:&#x27;, alpha=0.6)
+        plt.legend(loc=&#x27;lower right&#x27; if K_id &gt; 0 else &#x27;upper right&#x27;)
+        
+        plt.savefig(PLOT_FILE, dpi=300)
+        print(f&quot;[OK] Grafica de ajuste guardada en: &#x27;{PLOT_FILE}&#x27;&quot;)
+        
+    except Exception as e:
+        print(f&quot; Error durante el ajuste de la curva: {e}&quot;)
+
+def run_offline_fit():
+    if not os.path.exists(CSV_FILE):
+        print(f&quot; Error: No se encontro el archivo experimental &#x27;{CSV_FILE}&#x27;&quot;)
+        return False
+    
+    print(f&quot;\n[MODO OFFLINE] Leyendo datos experimentales del archivo &#x27;{CSV_FILE}&#x27;...&quot;)
+    t_list = []
+    y_list = []
+    try:
+        with open(CSV_FILE, &#x27;r&#x27;) as f:
+            reader = csv.reader(f)
+            next(reader) # Saltar cabecera
+            for row in reader:
+                if row:
+                    t_list.append(float(row[0]))
+                    y_list.append(float(row[1]))
+        
+        t_arr = np.array(t_list)
+        y_arr = np.array(y_list)
+        print(f&quot;[INFO] Se cargaron {len(t_arr)} muestras con exito.&quot;)
+        perform_fit(t_arr, y_arr)
+        return True
+    except Exception as e:
+        print(f&quot; Error al abrir o procesar el CSV: {e}&quot;)
+        return False
+
+if __name__ == &quot;__main__&quot;:
+    print(&quot;=========================================================&quot;)
+    print(&quot;      Herramienta Universal de Identificacion - N20      &quot;)
+    print(&quot;=========================================================&quot;)
+    
+    # 1. Verificar si existe archivo CSV para realizar ajuste offline
+    if os.path.exists(CSV_FILE):
+        print(&quot;Se detectaron datos experimentales previos de la planta.&quot;)
+        choice = input(&quot;¿Deseas realizar el ajuste offline con estos datos? (s/n): &quot;).strip().lower()
+        if choice == &#x27;s&#x27;:
+            success = run_offline_fit()
+            if success:
+                sys.exit(0)
+
+    # 2. De lo contrario, proceder a la identificación serial
+    ports = scan_serial_ports()
+    if not ports:
+        print(&quot;\n❌ No se encontraron puertos seriales disponibles.&quot;)
+        print(&quot;Por favor, conecta tu Arduino Uno e intenta de nuevo.&quot;)
+        sys.exit(1)
+        
+    print(&quot;Puertos COM detectados:&quot;)
+    for idx, p in enumerate(ports):
+        print(f&quot;  [{idx}] {p}&quot;)
+        
+    try:
+        choice = int(input(&quot;\nSelecciona el indice del puerto COM para la prueba: &quot;))
+        if choice &lt; 0 or choice &gt;= len(ports):
+            raise ValueError()
+        selected_port = ports[choice]
+    except (ValueError, IndexError):
+        print(&quot; Selección invalida. Saliendo...&quot;)
+        sys.exit(1)
+        
+    t_arr, y_arr = run_identification(selected_port)
+    if t_arr is not None:
+        perform_fit(t_arr, y_arr)
+</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 05 CONTROLADORES DE VELOCIDAD ══════════ -->
+<section class="section" id="controladores">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Diseño de Controladores de Velocidad</h2>
+  </div>
+
+  <p style="color:var(--text2); font-size:0.88rem; line-height:1.7; margin-bottom:1.25rem;">
+    Con la función de transferencia G(s) identificada, se diseña el controlador de velocidad en lazo cerrado. El objetivo es que la velocidad del motor siga una referencia deseada con buena precisión, velocidad de respuesta y estabilidad. Existen varios métodos — la elección depende de las especificaciones del sistema deseadas.
+  </p>
+
+  <!-- Discretización -->
+  <div class="card" style="border-color:rgba(29,78,216,0.3); border-left:4px solid var(--accent2);">
+    <div class="card-title" style="color:var(--accent2);">Paso previo obligatorio — Discretización</div>
+    <p style="font-size:0.82rem; color:var(--text2); line-height:1.7; margin-bottom:0.85rem;">
+      Independientemente del método elegido, el resultado final <strong style="color:var(--text)">siempre debe estar en tiempo discreto</strong>. El Arduino no ejecuta funciones de transferencia continuas C(s); lo que implementa es la <strong style="color:var(--text)">ecuación de diferencias</strong> equivalente, descrita en la sección anterior.
+    </p>
+    <div class="formula-box">
+      <span class="formula-label">Estructura discreta general — Controlador PI/PID</span>
+      Controlador PI discreto: &nbsp;<span class="hl">C(z) = (b₀·z + b₁) / (z − 1)</span><br><br>
+      Los coeficientes <span class="hl2">b₀</span> y <span class="hl2">b₁</span> se calculan según el método de diseño y el período <span class="hlg">Ts</span>. El método de discretización más común es <strong>Tustin (bilineal)</strong>: s → (2/Ts)·(z−1)/(z+1).
+    </div>
+  </div>
+
+  <!-- Métodos -->
+  <p style="color:var(--text2); font-size:0.88rem; line-height:1.7; margin:1.5rem 0 1rem;">
+    A continuación se describen los tres métodos de diseño que deben aplicarse sobre la planta G(z) obtenida:
+  </p>
+
+  <div class="method-card">
+    <div class="method-title">
+      Controlador PI Clásico
+      <span class="method-tag tag-pi">Tustin</span>
+    </div>
+    <div class="method-desc">
+      Se diseña en el dominio continuo especificando la ecuación característica deseada de segundo orden: <strong>s² + 2ζωₙs + ωₙ² = 0</strong>. Se eligen el amortiguamiento ζ (típicamente 0.707) y la frecuencia natural ωₙ según la velocidad de respuesta deseada. Con la planta G(s) = K/(τs+1), se despeja analíticamente:<br><br>
+      <strong style="color:#d4380d;">Kp = (2ζωₙτ − 1) / K</strong> &nbsp;&nbsp; y &nbsp;&nbsp; <strong style="color:#d4380d;">Ki = (ωₙ²·τ) / K</strong><br><br>
+      Luego se discretiza el controlador C(s) = Kp + Ki/s usando la transformación de Tustin para obtener b₀ y b₁. Este método es intuitivo y da buen control cuando se conocen bien las especificaciones de desempeño deseadas.
+    </div>
+  </div>
+
+  <div class="method-card">
+    <div class="method-title">
+      Lugar Geométrico de las Raíces (LGR en Z)
+      <span class="method-tag tag-lgr">Root Locus</span>
+    </div>
+    <div class="method-desc">
+      Se trabaja con la planta discreta G(z) y se diseña el controlador colocando los polos del sistema en lazo cerrado dentro del círculo unitario. La técnica más directa es <strong>cancelar el polo lento de la planta</strong> (el polo en z = a₁ = e<sup>−Ts/τ</sup>) con un cero del controlador, e inyectar un integrador (polo en z = 1) para error en estado estacionario cero. La ganancia Kc se calcula para ubicar el polo de lazo cerrado en z_d = e<sup>s_d·Ts</sup>, donde s_d es el polo continuo equivalente deseado.<br><br>
+      En MATLAB se puede usar <code>rlocus()</code> sobre la planta discreta y <code>rlocfind()</code> para elegir la ganancia interactivamente. Ofrece buena intuición visual sobre la estabilidad del sistema.
+    </div>
+  </div>
+
+  <div class="method-card">
+    <div class="method-title">
+      Controlador Algebraico (Ecuación Diofántica — RST)
+      <span class="method-tag tag-alg">Asignación de polos</span>
+    </div>
+    <div class="method-desc">
+      Método general de asignación de polos en tiempo discreto. Se plantea la ecuación diofántica: <strong>A(z)·L(z) + B(z)·P(z) = A_m(z)</strong>, donde A(z) y B(z) son los polinomios de la planta discreta, y A_m(z) es el polinomio característico deseado (con los polos exactamente donde se quieren). El controlador RST resultante tiene la forma:<br><br>
+      <strong style="color:#16a34a;">u(z) = [P(z)/L(z)] · [r(z) − y(z)]</strong><br><br>
+      Permite asignar libremente todos los polos del sistema en lazo cerrado. En MATLAB se resuelve el sistema de ecuaciones lineales de la ecuación diofántica directamente con operaciones matriciales.
+    </div>
+  </div>
+
+  <!-- Filtro de referencia -->
+  <div class="method-card" style="border-color:rgba(8,145,178,0.25);">
+    <div class="method-title">
+      Filtro de referencia
+      <span class="method-tag tag-filter">Opcional</span>
+    </div>
+    <div class="method-desc">
+      Una vez diseñado el controlador, se puede agregar un <strong>filtro F(z)</strong> que actúa sobre la señal de referencia antes de entrar al lazo de control. Su propósito es suavizar la respuesta ante cambios de setpoint y reducir el sobrepaso, sin afectar el rechazo de perturbaciones. El filtro típico tiene la forma:<br><br>
+      <code>F(z) = (1 − a₁) / (z − a₁)</code> &nbsp;donde a₁ es el polo de la planta discreta.<br><br>
+      Implementarlo en el Arduino es sencillo: antes de calcular el error, filtrar la referencia con una ecuación de primer orden y usar esa referencia filtrada en el lazo de control.
+    </div>
+  </div>
+
+  <div class="info-box">
+    <div class="info-icon">ℹ</div>
+    <div class="info-text">
+      <strong>¿Cuál método usar?</strong> Cualquiera de los tres métodos es válido. El PI Clásico es el más directo si las especificaciones son simples. LGR ofrece buena intuición visual. El Algebraico da mayor control exacto sobre los polos. Se recomienda simular el lazo cerrado en MATLAB con <code>feedback(C*G, 1)</code> antes de implementar en el Arduino.
+    </div>
+  </div>
+
+
+</section>
+
+<!-- ══════════ 06 CONTROL DE POSICIÓN ══════════ -->
+<section class="section" id="posicion">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2 class="section-title">Control de Posición Angular</h2>
+  </div>
+
+  <p style="color:var(--text2); font-size:0.88rem; line-height:1.7; margin-bottom:1.25rem;">
+    Para controlar la <strong style="color:var(--text)">posición angular del eje</strong> en lugar de la velocidad, se parte de la función de transferencia G(s) ya identificada y se le agrega un <strong style="color:var(--text)">integrador puro (1/s)</strong>, ya que la posición es la integral de la velocidad en el tiempo:
+  </p>
+
+  <div class="formula-box">
+    <span class="formula-label">Planta de posición</span>
+    <span class="hl">G_p(s) = G_v(s) · (1/s) = K_pos / [s · (τs + 1)]</span><br><br>
+    Esta nueva planta es de <strong>segundo orden con un integrador</strong> (tipo 1). Con ella se aplican los mismos métodos de diseño descritos en la sección anterior (PI Clásico, LGR, Algebraico) para obtener el controlador de posición y sus coeficientes discretos.
+  </div>
+
+  <div class="info-box">
+    <div class="info-icon">ℹ</div>
+    <div class="info-text">
+      <strong>Conversión de unidades:</strong> K_pos incluye el factor de conversión entre la unidad de velocidad medida y la unidad de posición deseada (grados o radianes). Se calcula a partir de los datos de identificación conociendo la relación entre el voltaje medido del encoder y la velocidad angular real del motor.
+    </div>
+  </div>
+
+  <p style="color:var(--text2); font-size:0.88rem; line-height:1.7; margin:1.5rem 0 1rem;">
+    Adicionalmente, se deben tener en cuenta los siguientes aspectos propios del control de posición en el Arduino:
+  </p>
+
+  <div class="step-flow">
+    <div class="flow-step">
+      <div class="flow-num">1</div>
+      <div class="flow-content">
+        <div class="flow-title">Medir la posición desde el encoder</div>
+        <div class="flow-desc">
+          La posición angular se obtiene acumulando los pulsos del encoder desde el inicio: <code>posicion_grados = (encoderTicks / CPR) × 360°</code>. El valor de CPR corresponde a los pulsos totales por revolución completa del eje del motor (después de la reducción). Esta variable puede mantenerse en el rango [0°, 360°) usando la función módulo, o acumularse indefinidamente para control de posición multivoluta.
+        </div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">2</div>
+      <div class="flow-content">
+        <div class="flow-title">Implementar zona muerta cerca del setpoint</div>
+        <div class="flow-desc">
+          Para evitar que el motor oscile continuamente alrededor de la posición deseada (efecto chatter), se recomienda implementar una <strong style="color:var(--text)">zona muerta</strong> de ±0.5° a ±1°: cuando el error de posición es menor a ese umbral, se pone u[k] = 0 y se resetea el integrador. Esto retiene firmemente la posición sin sobrecargar el motor con corrientes innecesarias.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn-box info-box" style="margin-top:1rem;">
+    <div class="info-icon">⚠</div>
+    <div class="info-text">
+      <strong>Motor unipolar con este montaje:</strong> Si el control de posición requiere corrección en sentido contrario (cuando se pasa el setpoint), el motor simplemente se apaga y espera a que la inercia lo frene. Para control bidireccional se necesitaría configurar IN1/IN2 del L298N para permitir inversión de polaridad desde el Arduino.
+    </div>
+  </div>
+
+  <div class="tip-box info-box">
+    <div class="info-icon">✓</div>
+    <div class="info-text">
+      <strong>Recomendación:</strong> Simular el lazo cerrado completo en MATLAB/Simulink con el controlador diseñado y la planta G_p(s) antes de cargar el código al Arduino. Verificar que el sistema alcanza la posición sin oscilaciones excesivas y dentro de un tiempo razonable.
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <span class="f-uao">Universidad Autónoma de Occidente · Cali, Colombia</span>
+  <span>Guía de Laboratorio</span> · Control de Velocidad y Posición · Motor DC N20 + Encoder
+</footer>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent).then(() => {
+    btn.textContent = '¡Copiado!';
+    setTimeout(() => btn.textContent = 'Copiar', 2000);
+  });
+}
+
+window.addEventListener('scroll', () => {
+  const d = document.documentElement;
+  const pct = (d.scrollTop / (d.scrollHeight - d.clientHeight)) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+function showTab(id, btn) {
+  const container = btn.parentElement.parentElement;
+  container.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const target = container.querySelector('#' + id);
+  if (target) target.classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
